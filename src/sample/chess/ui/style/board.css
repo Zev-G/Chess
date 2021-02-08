@@ -1,0 +1,65 @@
+* {
+    -light-color: #ececd0;
+    -dark-color: #759555;
+    -arrow-color: rgba(248, 164, 7, 0.5);
+    -highlighted-spot-color: rgb(235, 97, 80);;
+
+    -from-color: rgb(253, 229, 72);
+    -to-color: rgb(235, 253, 72);
+}
+
+.board-spot {
+    -fx-border-width: 0;
+}
+
+.board-spot-light {
+    -fx-background-color: -light-color;
+}
+.board-spot-dark {
+    -fx-background-color: -dark-color;
+}
+.highlighted-spot {
+    -fx-background-color: -highlighted-spot-color;
+}
+.board-spot-dark.from-spot {
+    /*185, 200, 43*/
+    -fx-background-color: rgb(185, 200, 43);
+}
+.board-spot-dark.to-spot {
+    /*185, 200, 43*/
+    -fx-background-color: rgb(185, 200, 43);
+}
+.board-spot-light.from-spot {
+    /*244, 244, 129*/
+    -fx-background-color: rgb(244, 244, 129);
+}
+.board-spot-light.to-spot {
+    /*244, 244, 129*/
+    -fx-background-color: rgb(244, 244, 129);
+}
+
+.take-circle {
+    -fx-fill: transparent;
+    -fx-stroke: rgba(100, 100, 100, 0.4);
+    -fx-stroke-width: 10;
+}
+
+.move-circle {
+    -fx-fill:  rgba(100, 100, 100, 0.4);
+}
+
+.hover-spot {
+    -fx-border-color: white;
+    -fx-border-width: 5;
+}
+
+.arrow-line {
+    -fx-stroke-line-cap: round;
+    -fx-stroke: -arrow-color;
+    -fx-fill: -arrow-color;
+}
+.arrow-cap {
+    -fx-stroke-width: 15;
+    -fx-stroke: -arrow-color;
+    -fx-fill: -arrow-color;
+}
