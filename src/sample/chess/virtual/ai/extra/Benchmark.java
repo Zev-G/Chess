@@ -10,8 +10,7 @@ import java.util.Calendar;
 
 public class Benchmark {
 
-    public static long millisToSimulateXMoves(int moves) {
-        VirtualBoard board = VirtualBoard.defaultBoard();
+    public static long millisToSimulateXMoves(int moves, VirtualBoard board) {
         ArrayList<Move> movesList = board.genMovesForTeam(Team.WHITE);
         Move move = movesList.get(0);
         long startTime = Calendar.getInstance().getTimeInMillis();

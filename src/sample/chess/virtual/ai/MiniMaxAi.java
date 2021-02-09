@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MiniMaxAi extends AiBase  {
 
+    private static final boolean LOG = true;
+
     private static final int MAX_TABLE_SIZE = 200000;
     private static final boolean USE_TRANSPOSITION_TABLE = true;
     private static final boolean PRUNING = true;
@@ -22,7 +24,7 @@ public abstract class MiniMaxAi extends AiBase  {
     protected final int depth;
     protected boolean runOnSeparateThread = true;
 
-    protected double minWaitTime = 250;
+    protected double minWaitTime = 500;
 
     protected int calculations = 0;
     protected int valueChecks = 0;
@@ -37,56 +39,67 @@ public abstract class MiniMaxAi extends AiBase  {
     }
 
     @Override
-    public void move(Board board, Team team) {
+    public void move(VirtualBoard board, Team team, Board visualBoard) {
         new Thread(() -> {
-            System.out.println("Slot 0: " + (addOrder.size() > 0 ? addOrder.get(0) : "n/a"));
             if (transpositionTable.size() > MAX_TABLE_SIZE) {
-                System.out.println("Trimming table.");
+                if (LOG)
+                    System.out.println("Trimming table.");
                 while (transpositionTable.size() > MAX_TABLE_SIZE) {
                     String zero = addOrder.get(0);
                     addOrder.remove(zero);
                     transpositionTable.remove(zero);
                 }
             }
-            System.out.println("[" + Calendar.getInstance().getTime().toString() + "] Running minimax...");
+            if (LOG)
+                System.out.println("[" + Calendar.getInstance().getTime().toString() + "] Running minimax...");
 
             long currentTime = Calendar.getInstance().getTimeInMillis();
             calculations = 0;
             valueChecks = 0;
-            MoveAndValue result = minimax(board.getVirtualBoard(), board, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, team);
-            System.out.println("Finished. Value: " + result.getValue() + " Move: " + result.getMove());
+            MoveAndValue result = minimax(board, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, team);
+            if (LOG)
+                System.out.println("Finished. Value: " + result.getValue() + " Move: " + result.getMove());
             long dif = (Calendar.getInstance().getTimeInMillis() - currentTime) + 1;
-            System.out.println("Took " + ((double) dif / 1000) + " seconds to do " + calculations + " simulated moves.");
+            if (LOG)
+                System.out.println("Took " + ((double) dif / 1000) + " seconds to do " + calculations + " simulated moves.");
 //            System.out.println("In that time frame " + valueChecks + " board evaluations were done. And " + savedValueChecks + " were pulled from cache. Cache size: " + transpositionTable.size());
 
 
-            if (dif < minWaitTime) {
+            if (dif < minWaitTime && visualBoard != null) {
                 try {
                     Thread.sleep((long) (minWaitTime - dif));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+            ArrayList<Move> moves = board.genMovesForTeam(team);
             if (result.getMove() != null) {
-                ArrayList<Move> moves = board.getVirtualBoard().genMovesForTeam(team);
                 for (Move move : moves) {
                     if (move.getPiece().equals(result.getMove().getPiece()) && move.getLoc().equals(result.getMove().getLoc())) {
-                        Platform.runLater(() -> board.animateMove(move, board.getBoardSpotAtSpot(move.getPiece().getLocation()).getPiece()));
+                        if (visualBoard != null) {
+                            Platform.runLater(() -> visualBoard.animateMove(move, visualBoard.getBoardSpotAtSpot(move.getPiece().getLocation()).getPiece()));
+                        } else {
+                            move.doMove(board, true);
+                        }
                         return;
                     }
                 }
             } else {
-                ArrayList<Move> moves = board.getVirtualBoard().genMovesForTeam(team);
                 int random = (int) (Math.random() * (moves.size() - 1));
                 Move move = moves.get(random);
-                Platform.runLater(() -> board.animateMove(move, board.getBoardSpotAtSpot(move.getPiece().getLocation()).getPiece()));
+                if (visualBoard != null) {
+                    Platform.runLater(() -> visualBoard.animateMove(move, visualBoard.getBoardSpotAtSpot(move.getPiece().getLocation()).getPiece()));
+                } else {
+                    move.doMove(board, true);
+                }
+                return;
             }
             System.err.println("Didnt find move");
         }).start();
 
     }
 
-    private MoveAndValue minimax(VirtualBoard position, Board board, int depth, int alpha, int beta, Team maximizingPlayer) {
+    private MoveAndValue minimax(VirtualBoard position, int depth, int alpha, int beta, Team maximizingPlayer) {
         ArrayList<Move> moves = position.genBiLegalMovesForTeam(maximizingPlayer);
         moves.sort((o1, o2) -> {
             int o1Val = 0;
@@ -107,28 +120,21 @@ public abstract class MiniMaxAi extends AiBase  {
             int maxEval = Integer.MIN_VALUE;
             for (Move move : moves) {
                 AtomicReference<Arrow> arrow = null;
-                if (DRAW_ARROWS_AT_DEPTH >= 0 && DRAW_ARROWS_AT_DEPTH >= this.depth - depth) {
-                    arrow = new AtomicReference<>();
-                    AtomicReference<Arrow> finalArrow = arrow;
-                    Platform.runLater(() -> finalArrow.set(board.drawArrow(move.getStartX(), move.getStartY(), move.getX(), move.getY())));
-                }
                 move.doMove(position, false);
                 calculations++;
-                MoveAndValue eval = minimax(position, board, depth - 1, alpha, beta, maximizingPlayer.opposite());
+                MoveAndValue eval = minimax(position, depth - 1, alpha, beta, maximizingPlayer.opposite());
+                int val = position.getGame().isRepetition(position.toCompactString(maximizingPlayer.opposite())) ? 0 : eval.getValue();
                 move.undo(position);
-                if (DRAW_ARROWS_AT_DEPTH >= 0 && DRAW_ARROWS_AT_DEPTH >= this.depth - depth) {
-                    Platform.runLater(() -> board.removeArrow(arrow.get()));
-                }
-                if (eval.getValue() > maxEval) {
+                if (val > maxEval) {
                     if (move.isLegal(position)) {
-                        maxEval = eval.getValue();
+                        maxEval = val;
                         bestMove = move;
                     } else {
                         continue;
                     }
                 }
                 if (PRUNING) {
-                    alpha = Math.max(alpha, eval.getValue());
+                    alpha = Math.max(alpha, val);
                     if (beta <= alpha)
                         break;
                 }
@@ -138,28 +144,21 @@ public abstract class MiniMaxAi extends AiBase  {
             int minEval = Integer.MAX_VALUE;
             for (Move move : moves) {
                 AtomicReference<Arrow> arrow = null;
-                if (DRAW_ARROWS_AT_DEPTH >= 0 && DRAW_ARROWS_AT_DEPTH >= this.depth - depth) {
-                    arrow = new AtomicReference<>();
-                    AtomicReference<Arrow> finalArrow = arrow;
-                    Platform.runLater(() -> finalArrow.set(board.drawArrow(move.getStartX(), move.getStartY(), move.getX(), move.getY())));
-                }
                 move.doMove(position, false);
                 calculations++;
-                MoveAndValue eval = minimax(position, board, depth - 1, alpha, beta, maximizingPlayer.opposite());
+                MoveAndValue eval = minimax(position, depth - 1, alpha, beta, maximizingPlayer.opposite());
+                int val = position.getGame().isRepetition(position.toCompactString(maximizingPlayer.opposite())) ? 0 : eval.getValue();
                 move.undo(position);
-                if (DRAW_ARROWS_AT_DEPTH >= 0 && DRAW_ARROWS_AT_DEPTH >= this.depth - depth) {
-                    Platform.runLater(() -> board.removeArrow(arrow.get()));
-                }
-                if (eval.getValue() < minEval) {
+                if (val < minEval) {
                     if (move.isLegal(position)) {
-                        minEval = eval.getValue();
+                        minEval = val;
                         bestMove = move;
                     } else {
                         continue;
                     }
                 }
                 if (PRUNING) {
-                    beta = Math.min(beta, eval.getValue());
+                    beta = Math.min(beta, val);
                     if (beta <= alpha)
                         break;
                 }
@@ -170,23 +169,23 @@ public abstract class MiniMaxAi extends AiBase  {
 
     private int efficientGetSituationValue(VirtualBoard board, Team turnOf) {
         if (USE_TRANSPOSITION_TABLE) {
-            String boardVal = board.toCompactString() + " " + (turnOf == Team.WHITE ? "w" : "b");
+            String boardVal = board.toCompactString(turnOf);
             Integer saved = transpositionTable.get(boardVal);
             if (saved != null) {
                 savedValueChecks++;
                 return saved;
             }
             valueChecks++;
-            saved = situationValue(board, turnOf);
+            saved = situationValue(board, boardVal, turnOf);
             transpositionTable.put(boardVal, saved);
             addOrder.add(boardVal);
             return saved;
         } else {
-            return situationValue(board, turnOf);
+            return situationValue(board, board.toCompactString(turnOf), turnOf);
         }
     }
 
-    public abstract int situationValue(VirtualBoard board, Team turnOf);
+    public abstract int situationValue(VirtualBoard board, String compactBoard, Team turnOf);
 
     public static class MoveAndValue {
 

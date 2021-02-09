@@ -1,5 +1,6 @@
 package sample.chess.virtual;
 
+import sample.chess.game.Game;
 import sample.chess.virtual.extra.Coordinates;
 import sample.chess.virtual.moves.Move;
 import sample.chess.virtual.moves.MoveGenerator;
@@ -9,8 +10,10 @@ import java.util.Arrays;
 
 public class VirtualBoard {
 
+
     private VirtualPiece[][] board;
 
+    private final Game game;
     private final ArrayList<VirtualPiece> blackPieces = new ArrayList<>();
     private final ArrayList<VirtualPiece> whitePieces = new ArrayList<>();
 
@@ -22,12 +25,17 @@ public class VirtualBoard {
     private VirtualPiece qsbRook;
     private VirtualPiece ksbRook;
 
-    public VirtualBoard() {
-
+    public VirtualBoard(Game game) {
+        this.game = game;
     }
-    public VirtualBoard(VirtualPiece[][] board) {
+    public VirtualBoard(VirtualPiece[][] board, Game game) {
+        this.game = game;
         this.board = board;
         init();
+    }
+
+    public Game getGame() {
+        return game;
     }
 
     private void init() {
@@ -105,8 +113,8 @@ public class VirtualBoard {
         return board;
     }
 
-    private static VirtualBoard duplicateBoard(VirtualPiece[][] board) {
-        VirtualBoard newBoard = new VirtualBoard();
+    private static VirtualBoard duplicateBoard(VirtualPiece[][] board, Game game) {
+        VirtualBoard newBoard = new VirtualBoard(game);
         VirtualPiece[][] newBoardArray = new VirtualPiece[8][8];
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -117,8 +125,8 @@ public class VirtualBoard {
         return newBoard;
     }
 
-    public static VirtualBoard defaultBoard() {
-        VirtualBoard board = new VirtualBoard();
+    public static VirtualBoard defaultBoard(Game game) {
+        VirtualBoard board = new VirtualBoard(game);
         VirtualPiece[][] boardValue = new VirtualPiece[][] {
                 { new VirtualPiece(PieceType.ROOK, Team.BLACK, board, 0, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 0, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 0, 6), new VirtualPiece(PieceType.ROOK, Team.WHITE, board, 0, 7) },
                 { new VirtualPiece(PieceType.KNIGHT, Team.BLACK, board, 1, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 1, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 1, 6), new VirtualPiece(PieceType.KNIGHT, Team.WHITE, board, 1, 7) },
@@ -269,7 +277,7 @@ public class VirtualBoard {
     }
 
     public VirtualBoard copy() {
-        return duplicateBoard(board);
+        return duplicateBoard(board, game);
     }
 
     public ArrayList<Move> genMovesForTeam(Team team) {
@@ -332,7 +340,7 @@ public class VirtualBoard {
         return "VirtualBoard{" + Arrays.deepToString(board) + '}';
     }
 
-    public String toCompactString() {
+    public String toCompactString(Team turnOf) {
         StringBuilder builder = new StringBuilder();
         for (VirtualPiece[] pieces : board) {
             for (VirtualPiece piece : pieces) {
@@ -343,6 +351,7 @@ public class VirtualBoard {
         builder.append(canCastleKingSide(Team.BLACK) ? "y" : "n");
         builder.append(canCastleQueenSide(Team.WHITE) ? "y" : "n");
         builder.append(canCastleQueenSide(Team.BLACK) ? "y" : "n");
+        builder.append(" ").append(turnOf.toString().charAt(0));
         return builder.toString();
     }
 

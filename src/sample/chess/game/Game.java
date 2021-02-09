@@ -10,23 +10,41 @@ import sample.chess.virtual.ai.AiBase;
 import sample.chess.virtual.moves.LessSimpleMMAi;
 import sample.chess.virtual.moves.Move;
 
+import java.util.ArrayList;
+
 public class Game {
 
     private Team currentTurn = Team.WHITE;
-    private final Board board = new Board(VirtualBoard.defaultBoard(), this);
+    private final VirtualBoard board = VirtualBoard.defaultBoard(this);
+    private Board visualBoard;
 
     private AiBase blackController = new LessSimpleMMAi(4);
     private AiBase whiteController = null;
 
+    private final ArrayList<String> positions = new ArrayList<>();
+
     private boolean gameOver = false;
 
-    public Game() {
+    public Game(boolean createVisualBoard) {
+        if (createVisualBoard) {
+            getVisualBoard();
+        }
         turnPulse();
     }
 
     public void show(Stage stage) {
-        stage.setScene(new Scene(board));
+        stage.setScene(new Scene(getVisualBoard()));
         stage.show();
+    }
+
+    public Board getVisualBoard() {
+        if (visualBoard == null)
+            visualBoard = new Board(board);
+        return visualBoard;
+    }
+
+    public void setVisualBoard(Board visualBoard) {
+        this.visualBoard = visualBoard;
     }
 
     public AiBase getWhiteController() {
@@ -53,29 +71,50 @@ public class Game {
 
     public void nextTurn(Move move) {
         currentTurn = currentTurn.opposite();
+        String compactString = board.toCompactString(currentTurn);
+        positions.add(compactString);
+
         turnPulse();
-        for (BoardSpot[] spots : board.getBoardSpots()) {
-            for (BoardSpot spot : spots) {
-                spot.getStyleClass().removeAll("from-spot", "to-spot");
+        if (visualBoard != null) {
+            for (BoardSpot[] spots : getVisualBoard().getBoardSpots()) {
+                for (BoardSpot spot : spots) {
+                    spot.getStyleClass().removeAll("from-spot", "to-spot");
+                }
+            }
+            getVisualBoard().getBoardSpotAtSpot(move.getLoc()).getStyleClass().add("to-spot");
+            getVisualBoard().getBoardSpotAtSpot(move.getStart()).getStyleClass().add("from-spot");
+        }
+    }
+
+    public boolean isRepetition(String compactBoard) {
+        int instances = 0;
+        for (String pos : positions) {
+            if (pos.equals(compactBoard)) {
+                instances++;
+                if (instances == 3)
+                    return true;
             }
         }
-        board.getBoardSpotAtSpot(move.getLoc()).getStyleClass().add("to-spot");
-        board.getBoardSpotAtSpot(move.getStart()).getStyleClass().add("from-spot");
+        return false;
     }
 
     private void turnPulse() {
-        if (board.getVirtualBoard().genMovesForTeam(currentTurn).isEmpty()) {
+        if (board.genMovesForTeam(currentTurn).isEmpty()) {
             gameOver = true;
             return;
         }
         if (currentTurn == Team.WHITE && whiteController != null) {
-            whiteController.move(board, Team.WHITE);
+            whiteController.move(board, Team.WHITE, visualBoard);
         } else if (currentTurn == Team.BLACK && blackController != null) {
-            blackController.move(board, Team.BLACK);
+            blackController.move(board, Team.BLACK, visualBoard);
         }
     }
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public void createVisualBoard() {
+        getVisualBoard();
     }
 }

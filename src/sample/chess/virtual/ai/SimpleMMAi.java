@@ -15,7 +15,7 @@ public class SimpleMMAi extends MiniMaxAi {
     }
 
     @Override
-    public int situationValue(VirtualBoard board, Team turnOf) {
+    public int situationValue(VirtualBoard board, String pos, Team turnOf) {
 //        double val = board.boardValue();
 //        if (board.isTeamInCheckmate(turnOf.opposite())) {
 //            return turnOf == Team.WHITE ? 9999 : -9999;

@@ -2,6 +2,7 @@ package sample.chess.virtual.ai;
 
 import sample.chess.ui.Board;
 import sample.chess.virtual.Team;
+import sample.chess.virtual.VirtualBoard;
 import sample.chess.virtual.moves.Move;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public abstract class NegaScoutAi extends AiBase {
     protected abstract double evaluate();
 
     @Override
-    public void move(Board board, Team team) {
+    public void move(VirtualBoard board, Team team, Board visualBoard) {
 
     }
 

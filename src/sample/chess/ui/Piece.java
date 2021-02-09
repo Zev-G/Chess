@@ -73,21 +73,19 @@ public class Piece extends ImageView {
         }
     }
 
-    public void dragDetected(MouseEvent event, Board board) {
+    public void dragDetected(MouseEvent event, Board board, BoardSpot spot) {
         setVisible(false);
         makeVisible = true;
         board.getChildren().add(spotSimulator);
         startX = event.getSceneX();
         startY = event.getSceneY();
-        BoardSpot spot = board.getBoardSpotAtSpot(vPiece.getLocation());
         Bounds parentBounds = spot.localToScene(spot.getBoundsInLocal());
         spotSimulator.setLayoutX(parentBounds.getMinX());
         spotSimulator.setLayoutY(parentBounds.getMinY());
     }
 
-    public void dragged(MouseEvent event, Board board) {
-        BoardSpot spot = board.getBoardSpotAtSpot(vPiece.getLocation());
-        Bounds parentBounds = spot.localToScene(spot.getBoundsInLocal());
+    public void dragged(MouseEvent event, Board board, BoardSpot atSpot) {
+        Bounds parentBounds = atSpot.localToScene(atSpot.getBoundsInLocal());
         spotSimulator.setLayoutX(parentBounds.getMinX() + (event.getSceneX() - startX));
         spotSimulator.setLayoutY(parentBounds.getMinY() + (event.getSceneY() - startY));
 
@@ -113,7 +111,7 @@ public class Piece extends ImageView {
         board.getChildren().remove(spotSimulator);
         if (hoverSpot != null) {
             Coordinates hoverSpotLocation = board.locationOfBoardSpot(hoverSpot);
-            if (board.getGame().getCurrentTurn() == vPiece.getTeam() && board.getGame().teamsTeamController(vPiece.getTeam()) == null) {
+            if (board.getVirtualBoard().getGame().getCurrentTurn() == vPiece.getTeam() && board.getVirtualBoard().getGame().teamsTeamController(vPiece.getTeam()) == null) {
                 for (Move move : vPiece.genMoves()) {
                     if (hoverSpotLocation.equals(move.getLoc())) {
                         move.doMove(board, true);

@@ -42,7 +42,7 @@ public class BoardSpot extends AnchorPane {
                 board.clearArrows();
                 if (currentShape != null) {
                     currentShape.getOnMousePressed().handle(mouseEvent);
-                } else if (currentPiece != null && board.getGame().getCurrentTurn() == currentPiece.getVirtualPiece().getTeam() && board.getGame().teamsTeamController(currentPiece.getVirtualPiece().getTeam()) == null && !board.getGame().isGameOver()) {
+                } else if (currentPiece != null && board.getVirtualBoard().getGame().getCurrentTurn() == currentPiece.getVirtualPiece().getTeam() && board.getVirtualBoard().getGame().teamsTeamController(currentPiece.getVirtualPiece().getTeam()) == null && !board.getVirtualBoard().getGame().isGameOver()) {
                     board.clearShapes();
                     currentPiece.clicked(mouseEvent, board);
                 } else {
@@ -54,7 +54,7 @@ public class BoardSpot extends AnchorPane {
         setOnDragDetected(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (currentPiece != null) {
-                    currentPiece.dragDetected(mouseEvent, board);
+                    currentPiece.dragDetected(mouseEvent, board, this);
                 }
             }
         });
@@ -62,7 +62,7 @@ public class BoardSpot extends AnchorPane {
         setOnMouseDragged(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (currentPiece != null) {
-                    currentPiece.dragged(mouseEvent, board);
+                    currentPiece.dragged(mouseEvent, board, this);
                     if (mouseEvent.getPickResult().getIntersectedNode() == null || mouseEvent.getPickResult().getIntersectedNode() instanceof Board) {
                         for (BoardSpot[] spots : board.getBoardSpots()) {
                             for (BoardSpot spot : spots) {

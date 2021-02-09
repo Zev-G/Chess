@@ -2,10 +2,8 @@
     -light-color: #ececd0;
     -dark-color: #759555;
     -arrow-color: rgba(248, 164, 7, 0.5);
-    -highlighted-spot-color: rgb(235, 97, 80);;
-
-    -from-color: rgb(253, 229, 72);
-    -to-color: rgb(235, 253, 72);
+    -highlighted-spot-color-light: rgb(235, 97, 80);;
+    -highlighted-spot-color-dark: rgb(208, 76, 59);;
 }
 
 .board-spot {
@@ -17,9 +15,6 @@
 }
 .board-spot-dark {
     -fx-background-color: -dark-color;
-}
-.highlighted-spot {
-    -fx-background-color: -highlighted-spot-color;
 }
 .board-spot-dark.from-spot {
     /*185, 200, 43*/
@@ -36,6 +31,12 @@
 .board-spot-light.to-spot {
     /*244, 244, 129*/
     -fx-background-color: rgb(244, 244, 129);
+}
+.board-spot-light.highlighted-spot {
+    -fx-background-color: -highlighted-spot-color-light !important;
+}
+.board-spot-dark.highlighted-spot {
+    -fx-background-color: -highlighted-spot-color-dark !important;
 }
 
 .take-circle {

@@ -19,17 +19,21 @@ public class LessSimpleMMAi extends MiniMaxAi {
     }
 
     @Override
-    public int situationValue(VirtualBoard board, Team turnOf) {
+    public int situationValue(VirtualBoard board, String pos, Team turnOf) {
         ArrayList<Move> allLegalOpponentMoves = board.genMovesForTeam(turnOf.opposite());
         ArrayList<Move> allLegalMoves = board.genMovesForTeam(turnOf);
 
         VirtualPiece ourKing = turnOf == Team.WHITE ? board.getWhiteKing() : board.getBlackKing();
         VirtualPiece theirKing = turnOf == Team.WHITE ? board.getBlackKing() : board.getWhiteKing();
+        if (board.getGame().isRepetition(pos)) {
+            System.out.println("Returned 0 from repetition");
+            return 0;
+        }
         if (allLegalMoves.isEmpty()) {
             Coordinates ourKingLoc = ourKing.getLocation();
             for (Move move : allLegalOpponentMoves) {
                 if (move.getLoc().equals(ourKingLoc)) {
-                    return turnOf == Team.WHITE ? -9999 : 9999;
+                    return turnOf == Team.WHITE ? -999999 : 999999;
                 }
             }
         }
@@ -37,7 +41,7 @@ public class LessSimpleMMAi extends MiniMaxAi {
             Coordinates theirKingLoc = theirKing.getLocation();
             for (Move move : allLegalMoves) {
                 if (move.getLoc().equals(theirKingLoc)) {
-                    return turnOf == Team.WHITE ? 9999 : -9999;
+                    return turnOf == Team.WHITE ? 999999 : -999999;
                 }
             }
             return 0;

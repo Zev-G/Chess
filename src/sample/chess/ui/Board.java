@@ -11,10 +11,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import sample.chess.game.Game;
 import sample.chess.ui.extra.Arrow;
 import sample.chess.ui.style.Styles;
 import sample.chess.virtual.VirtualBoard;
+import sample.chess.virtual.VirtualPiece;
 import sample.chess.virtual.extra.Coordinates;
 import sample.chess.virtual.moves.Move;
 
@@ -23,14 +23,12 @@ public class Board extends Pane {
     // Technical
     private VirtualBoard vBoard;
     private final BoardSpot[][] boardSpots = new BoardSpot[8][8];
-    private final Game game;
 
     // Visual
     private final GridPane pieceHolder = new GridPane();
     private final Pane arrowPane = new Pane();
 
-    public Board(VirtualBoard board, Game game) {
-        this.game = game;
+    public Board(VirtualBoard board) {
         this.vBoard = board;
         getStylesheets().add(Styles.get("board"));
         arrowPane.setMouseTransparent(true);
@@ -71,9 +69,10 @@ public class Board extends Pane {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 BoardSpot spot = boardSpots[i][j];
-                if (vBoard.isPieceAtLocation(i, j)) {
-                    if (spot.getPiece() == null || spot.getPiece().getVirtualPiece() != vBoard.getPieceAtLocation(i, j)) {
-                        spot.setCurrentPiece(new Piece(vBoard.getPieceAtLocation(i, j)));
+                VirtualPiece piece = vBoard.getPieceAtLocation(i, j);
+                if (piece != null) {
+                    if (spot.getPiece() == null || spot.getPiece().getVirtualPiece() != piece) {
+                        spot.setCurrentPiece(new Piece(piece));
                     }
                 } else {
                     spot.setCurrentPiece(null);
@@ -91,10 +90,6 @@ public class Board extends Pane {
 
     public BoardSpot getBoardSpotAtSpot(Coordinates loc) {
         return getBoardSpotAtSpot(loc.getX(), loc.getY());
-    }
-
-    public Game getGame() {
-        return game;
     }
 
     public void clearShapes() {

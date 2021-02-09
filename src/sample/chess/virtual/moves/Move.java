@@ -28,16 +28,24 @@ public abstract class Move {
     }
 
     public void doMove(Board board, boolean forReal) {
-        doMove(board.getVirtualBoard(), forReal);
-        board.updateToBoard();
-        board.getGame().nextTurn(this);
+        doMove(board.getVirtualBoard(), forReal, false);
+        if (forReal) {
+            board.updateToBoard();
+            board.getVirtualBoard().getGame().nextTurn(this);
+        }
     }
     public void doMove(VirtualBoard board, boolean forReal) {
+        doMove(board, forReal, true);
+    }
+    public void doMove(VirtualBoard board, boolean forReal, boolean nextTurn) {
         if (piece.canBeTakenByEnPassant()) {
             piece.setCanBeTakenByEnPassant(false);
         }
         piece.moved();
         abstractDoMove(board);
+        if (nextTurn && forReal) {
+            board.getGame().nextTurn(this);
+        }
     }
     protected abstract void abstractDoMove(VirtualBoard board);
 
