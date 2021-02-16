@@ -43,9 +43,11 @@ public class Coordinates {
 
     @Override
     public String toString() {
-        return "Coordinates{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return ((char) 97 + x) + "" + (8 - y);
     }
+
+    public static char letterFromInt(int i) {
+        return (char) (97 + i);
+    }
+
 }

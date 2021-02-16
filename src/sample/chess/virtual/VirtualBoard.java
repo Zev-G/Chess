@@ -294,6 +294,16 @@ public class VirtualBoard {
         }
         return moves;
     }
+    public ArrayList<Move> genTakeMovesForTeam(Team team) {
+        ArrayList<Move> moves = new ArrayList<>();
+        for (VirtualPiece piece : team == Team.WHITE ? (ArrayList<VirtualPiece>) whitePieces.clone() : (ArrayList<VirtualPiece>) blackPieces.clone()) {
+            for (Move move : piece.genMoves()) {
+                if (move.getTakePiece() != null)
+                    moves.add(move);
+            }
+        }
+        return moves;
+    }
 
     public boolean isTeamInCheckmate(Team checkIsInCheckMate) {
         return genMovesForTeam(checkIsInCheckMate).isEmpty() && isTeamInCheck(checkIsInCheckMate);
@@ -353,6 +363,62 @@ public class VirtualBoard {
         builder.append(canCastleQueenSide(Team.BLACK) ? "y" : "n");
         builder.append(" ").append(turnOf.toString().charAt(0));
         return builder.toString();
+    }
+
+    public String toFen() {
+        StringBuilder fen = new StringBuilder();
+        for (int y = 0; y < 8; y++) {
+            byte blank = 0;
+            for (int x = 0; x < 8; x++) {
+                VirtualPiece atLoc = getPieceAtLocation(x, y);
+                if (atLoc == null)
+                    blank++;
+                else {
+                    if (blank > 0) {
+                        fen.append(blank);
+                    }
+                    fen.append(atLoc.toCompactString());
+                    blank = 0;
+                }
+            }
+            if (blank > 0)
+                fen.append(blank);
+            fen.append('/');
+        }
+        fen.append(" ").append(game.getCurrentTurn().toString().substring(0, 1).toLowerCase()).append(" ");
+        boolean wKingSide = canCastleKingSide(Team.WHITE);
+        boolean bKingSide = canCastleKingSide(Team.BLACK);
+        boolean wQueenSide = canCastleQueenSide(Team.WHITE);
+        boolean bQueenSide = canCastleQueenSide(Team.BLACK);
+        if (!wKingSide && !bKingSide && !wQueenSide && !bQueenSide)
+            fen.append("-");
+        else {
+            if (wKingSide)
+                fen.append("K");
+            if (wQueenSide)
+                fen.append("Q");
+            if (bKingSide)
+                fen.append("k");
+            if (bQueenSide)
+                fen.append("q");
+        }
+        fen.append(" ");
+        Coordinates enPassant = game.getEnPassant();
+        if (enPassant != null) {
+            fen.append(enPassant.toString());
+        } else {
+            fen.append("-");
+        }
+        fen.append(" ").append(game.getHalfMoves()).append(" ").append(game.getMoves());
+        return fen.toString();
+    }
+
+    public void toFen(String fen) {
+
+    }
+
+    public static void fromFen(String fen, Game game) {
+
     }
 
     // These methods only make sure the king and rook haven't moved, which is why they are private.

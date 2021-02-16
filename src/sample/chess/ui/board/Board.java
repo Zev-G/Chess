@@ -1,4 +1,4 @@
-package sample.chess.ui;
+package sample.chess.ui.board;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -21,7 +21,7 @@ import sample.chess.virtual.moves.Move;
 public class Board extends Pane {
 
     // Technical
-    private VirtualBoard vBoard;
+    private final VirtualBoard vBoard;
     private final BoardSpot[][] boardSpots = new BoardSpot[8][8];
 
     // Visual
@@ -44,6 +44,12 @@ public class Board extends Pane {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 BoardSpot spot = new BoardSpot(SpotColor.fromBoardSpot(i, j), this);
+                if (i == 0) {
+                    spot.setNum(8 - j);
+                }
+                if (j == 7) {
+                    spot.setLetter(Coordinates.letterFromInt(i));
+                }
                 boardSpots[i][j] = spot;
                 pieceHolder.add(spot, i, j);
             }
@@ -93,7 +99,6 @@ public class Board extends Pane {
     }
 
     public void clearShapes() {
-        // TODO make this also clear all children other than the ones which are supposed to be in this node's children list. so all imageviews would be removed. aka fix the issue where if your dragging a piece and ai takes then the boardspot receives a mouse released but the piece there is no the piece which was dragging and so the piece stays.
         for (BoardSpot[] spots : boardSpots) {
             for (BoardSpot spot : spots) {
                 spot.setCurrentShape(null);

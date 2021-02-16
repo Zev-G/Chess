@@ -1,7 +1,7 @@
 * {
     -light-color: #ececd0;
     -dark-color: #759555;
-    -arrow-color: rgba(248, 164, 7, 0.5);
+    -arrow-color: rgba(248, 164, 7, 0.7);
     -highlighted-spot-color-light: rgb(235, 97, 80);;
     -highlighted-spot-color-dark: rgb(208, 76, 59);;
 }
@@ -15,6 +15,17 @@
 }
 .board-spot-dark {
     -fx-background-color: -dark-color;
+}
+.dark-spot-label {
+    -fx-text-fill: -dark-color;
+}
+.light-spot-label {
+    -fx-text-fill: -light-color;
+}
+.light-spot-label, .dark-spot-label {
+    -fx-font-size: 22;
+    -fx-font-family: Arial;
+    -fx-font-weight: bold;
 }
 .board-spot-dark.from-spot {
     /*185, 200, 43*/

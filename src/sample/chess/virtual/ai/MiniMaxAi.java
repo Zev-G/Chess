@@ -1,15 +1,17 @@
 package sample.chess.virtual.ai;
 
 import javafx.application.Platform;
-import sample.chess.ui.Board;
+import sample.chess.ui.board.Board;
 import sample.chess.ui.extra.Arrow;
 import sample.chess.virtual.Team;
 import sample.chess.virtual.VirtualBoard;
+import sample.chess.virtual.VirtualPiece;
 import sample.chess.virtual.moves.Move;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MiniMaxAi extends AiBase  {
@@ -24,18 +26,22 @@ public abstract class MiniMaxAi extends AiBase  {
     protected final int depth;
     protected boolean runOnSeparateThread = true;
 
-    protected double minWaitTime = 500;
+    protected double minWaitTime = 250;
 
     protected int calculations = 0;
     protected int valueChecks = 0;
     private int savedValueChecks = 0;
+    private int quiescentSearches = 0;
 
     private final ArrayList<String> addOrder = new ArrayList<>();
     private final HashMap<String, Integer> transpositionTable = new HashMap<>();
 
-    protected MiniMaxAi(int depth) {
+    private final boolean useQuiescentSearch;
+
+    protected MiniMaxAi(int depth, boolean useQuiescentSearch) {
         super();
         this.depth = depth;
+        this.useQuiescentSearch = useQuiescentSearch;
     }
 
     @Override
@@ -101,19 +107,13 @@ public abstract class MiniMaxAi extends AiBase  {
 
     private MoveAndValue minimax(VirtualBoard position, int depth, int alpha, int beta, Team maximizingPlayer) {
         ArrayList<Move> moves = position.genBiLegalMovesForTeam(maximizingPlayer);
-        moves.sort((o1, o2) -> {
-            int o1Val = 0;
-            if (o1.getTakePiece() != null) {
-                o1Val = o1.getTakePiece().getPieceType().getVal();
-            }
-            int o2Val = 0;
-            if (o2.getTakePiece() != null) {
-                o2Val = o2.getTakePiece().getPieceType().getVal();
-            }
-            return o2Val - o1Val;
-        });
+        orderMoves(moves);
         if (moves.size() == 0 || depth == 0) {
-            return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer));
+            if (useQuiescentSearch) {
+                return new MoveAndValue(null, searchThroughCaptures(alpha, beta, position, maximizingPlayer));
+            } else {
+                return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer));
+            }
         }
         Move bestMove = null;
         if (maximizingPlayer == Team.WHITE) {
@@ -167,6 +167,30 @@ public abstract class MiniMaxAi extends AiBase  {
         }
     }
 
+    private int searchThroughCaptures(int alpha, int beta, VirtualBoard board, Team teamOf) {
+        int eval = efficientGetSituationValue(board, teamOf);
+        if (eval >= beta) {
+            return eval;
+        }
+        if (eval > alpha)
+            alpha = eval;
+        List<Move> captureMoves = board.genTakeMovesForTeam(teamOf);
+        orderMoves(captureMoves);
+        quiescentSearches++;
+        for (Move move : captureMoves) {
+            move.doMove(board, false);
+            eval = -searchThroughCaptures(-beta, -alpha, board, teamOf.opposite());
+            move.undo(board);
+            if (eval >= beta) {
+                return beta;
+            }
+            if (eval > alpha) {
+                alpha = eval;
+            }
+        }
+        return alpha;
+    }
+
     private int efficientGetSituationValue(VirtualBoard board, Team turnOf) {
         if (USE_TRANSPOSITION_TABLE) {
             String boardVal = board.toCompactString(turnOf);
@@ -186,6 +210,37 @@ public abstract class MiniMaxAi extends AiBase  {
     }
 
     public abstract int situationValue(VirtualBoard board, String compactBoard, Team turnOf);
+
+    private static void orderMoves(List<Move> moves) {
+        int[] moveScores = new int[moves.size()];
+        for (int i = 0, movesSize = moves.size(); i < movesSize; i++) {
+            Move move = moves.get(i);
+            int moveScoreGuess = 0;
+            VirtualPiece takePiece = move.getTakePiece();
+            VirtualPiece movePiece = move.getPiece();
+            if (takePiece != null) {
+                moveScoreGuess = 10 * takePiece.getPieceType().getVal() - movePiece.getPieceType().getVal();
+            }
+//            if (movePiece.getPieceType() != PieceType.PAWN) {
+                // TODO check if moves to a square attacked by an opponent pawn.
+//            }
+            moveScores[i] = moveScoreGuess;
+        }
+        sortMoves(moves, moveScores);
+    }
+
+    private static void sortMoves(List<Move> moves, int[] moveScores) {
+        for (int i = 0; i < moves.size() - 1; i++) {
+            for (int j = i + 1; j > 0; j--) {
+                int swapIndex = j - 1;
+                if (moveScores[swapIndex] < moveScores[j]) {
+                    Move swapMove = moves.get(swapIndex);
+                    moves.set(swapIndex, moves.get(j));
+                    moves.set(j, swapMove);
+                }
+            }
+        }
+    }
 
     public static class MoveAndValue {
 

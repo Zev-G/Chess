@@ -10,6 +10,14 @@ public enum PieceType {
     QUEEN(9, 'q'),
     KING(0, 'k');
 
+    public static PieceType fromChar(char c) {
+        for (PieceType piece : values()) {
+            if (piece.getChar() == c)
+                return piece;
+        }
+        return null;
+    }
+
     public static MoveGenerator[] moveGeneratorsForPiece(VirtualPiece piece, VirtualBoard board) {
         if (piece.getPieceType() == PAWN) {
             return new MoveGenerator[]{ new PawnMG(piece, board) };

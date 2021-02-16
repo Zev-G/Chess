@@ -1,7 +1,9 @@
-package sample.chess.ui;
+package sample.chess.ui.board;
 
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -16,6 +18,7 @@ public class BoardSpot extends AnchorPane {
 
     private final BorderPane piecePane = new BorderPane();
     private final BorderPane shapePane = new BorderPane();
+    private final AnchorPane textPane = new AnchorPane();
 
     private final SpotColor color;
     private final Board board;
@@ -25,7 +28,10 @@ public class BoardSpot extends AnchorPane {
         this.board = board;
 
         getStyleClass().addAll("board-spot", "board-spot-" + color.toString().toLowerCase());
-        getChildren().addAll(piecePane, shapePane);
+        getChildren().addAll(piecePane, shapePane, textPane);
+
+        textPane.setPadding(new Insets(7.5));
+        textPane.setMouseTransparent(true);
 
         setMinHeight(DEFAULT_SIZE);
         setMinWidth(DEFAULT_SIZE);
@@ -36,6 +42,8 @@ public class BoardSpot extends AnchorPane {
         AnchorPane.setTopAnchor(piecePane, 0D); AnchorPane.setBottomAnchor(piecePane, 0D);
         AnchorPane.setLeftAnchor(shapePane, 0D); AnchorPane.setRightAnchor(shapePane, 0D);
         AnchorPane.setTopAnchor(shapePane, 0D); AnchorPane.setBottomAnchor(shapePane, 0D);
+        AnchorPane.setLeftAnchor(textPane, 0D); AnchorPane.setRightAnchor(textPane, 0D);
+        AnchorPane.setTopAnchor(textPane, 0D); AnchorPane.setBottomAnchor(textPane, 0D);
 
         setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
@@ -102,6 +110,19 @@ public class BoardSpot extends AnchorPane {
                 }
             }
         });
+    }
+
+    public void setNum(int num) {
+        Label numLabel = new Label(Integer.toString(num));
+        numLabel.getStyleClass().add(color == SpotColor.LIGHT ? "dark-spot-label" : "light-spot-label");
+        textPane.getChildren().add(numLabel);
+        AnchorPane.setTopAnchor(numLabel, 0D); AnchorPane.setLeftAnchor(numLabel, 0D);
+    }
+    public void setLetter(char c) {
+        Label numLabel = new Label(Character.toString(c));
+        numLabel.getStyleClass().add(color == SpotColor.LIGHT ? "dark-spot-label" : "light-spot-label");
+        textPane.getChildren().add(numLabel);
+        AnchorPane.setBottomAnchor(numLabel, 0D); AnchorPane.setRightAnchor(numLabel, 0D);
     }
 
     public void setCurrentPiece(Piece piece) {

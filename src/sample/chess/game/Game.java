@@ -2,11 +2,12 @@ package sample.chess.game;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sample.chess.ui.Board;
-import sample.chess.ui.BoardSpot;
+import sample.chess.ui.board.Board;
+import sample.chess.ui.board.BoardSpot;
 import sample.chess.virtual.Team;
 import sample.chess.virtual.VirtualBoard;
 import sample.chess.virtual.ai.AiBase;
+import sample.chess.virtual.extra.Coordinates;
 import sample.chess.virtual.moves.LessSimpleMMAi;
 import sample.chess.virtual.moves.Move;
 
@@ -18,8 +19,13 @@ public class Game {
     private final VirtualBoard board = VirtualBoard.defaultBoard(this);
     private Board visualBoard;
 
-    private AiBase blackController = new LessSimpleMMAi(4);
+    private AiBase blackController = new LessSimpleMMAi(2, false);
     private AiBase whiteController = null;
+
+    private Coordinates enPassant;
+
+    private int halfMoves = 0;
+    private int moves = 1;
 
     private final ArrayList<String> positions = new ArrayList<>();
 
@@ -73,6 +79,8 @@ public class Game {
         currentTurn = currentTurn.opposite();
         String compactString = board.toCompactString(currentTurn);
         positions.add(compactString);
+        if (currentTurn == Team.WHITE)
+            moves++;
 
         turnPulse();
         if (visualBoard != null) {
@@ -116,5 +124,21 @@ public class Game {
 
     public void createVisualBoard() {
         getVisualBoard();
+    }
+
+    public Coordinates getEnPassant() {
+        return enPassant;
+    }
+
+    public void setEnPassant(Coordinates enPassant) {
+        this.enPassant = enPassant;
+    }
+
+    public int getMoves() {
+        return moves;
+    }
+
+    public int getHalfMoves() {
+        return halfMoves;
     }
 }

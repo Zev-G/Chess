@@ -1,6 +1,6 @@
 package sample.chess.virtual.moves;
 
-import sample.chess.ui.Board;
+import sample.chess.ui.board.Board;
 import sample.chess.virtual.VirtualBoard;
 import sample.chess.virtual.VirtualPiece;
 import sample.chess.virtual.extra.Coordinates;

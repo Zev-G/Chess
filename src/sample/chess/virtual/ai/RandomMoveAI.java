@@ -1,7 +1,7 @@
 package sample.chess.virtual.ai;
 
 import javafx.application.Platform;
-import sample.chess.ui.Board;
+import sample.chess.ui.board.Board;
 import sample.chess.virtual.Team;
 import sample.chess.virtual.VirtualBoard;
 import sample.chess.virtual.moves.Move;

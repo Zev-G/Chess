@@ -11,7 +11,7 @@ public class SimpleMMAi extends MiniMaxAi {
     private static final double VALUE_OF_A_UNPROTECTED_THREAT = 0.25;
 
     public SimpleMMAi(int depth) {
-        super(depth);
+        super(depth, false);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package sample.chess.ui;
+package sample.chess.ui.board;
 
 public enum SpotColor {
     LIGHT,

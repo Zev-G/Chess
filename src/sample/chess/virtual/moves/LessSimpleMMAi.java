@@ -14,8 +14,9 @@ public class LessSimpleMMAi extends MiniMaxAi {
     private static final double VALUE_OF_A_CHECK = 0.2;
     private static final double VALUE_OF_A_THREAT = 0.1;
 
-    public LessSimpleMMAi(int depth) {
-        super(depth);
+
+    public LessSimpleMMAi(int depth, boolean useQuiescentSearch) {
+        super(depth, useQuiescentSearch);
     }
 
     @Override

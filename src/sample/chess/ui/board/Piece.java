@@ -1,4 +1,4 @@
-package sample.chess.ui;
+package sample.chess.ui.board;
 
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
