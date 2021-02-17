@@ -1,6 +1,5 @@
 package tmw.me.chess.virtual;
 
-import sample.chess.virtual.moves.*;
 import tmw.me.chess.virtual.moves.*;
 
 public enum PieceType {
