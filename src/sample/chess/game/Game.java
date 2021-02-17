@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import sample.chess.ui.board.Board;
 import sample.chess.ui.board.BoardSpot;
+import sample.chess.ui.game.GameContainer;
 import sample.chess.virtual.Team;
 import sample.chess.virtual.VirtualBoard;
 import sample.chess.virtual.ai.AiBase;
@@ -39,7 +40,7 @@ public class Game {
     }
 
     public void show(Stage stage) {
-        stage.setScene(new Scene(getVisualBoard()));
+        stage.setScene(new Scene(new GameContainer(this)));
         stage.show();
     }
 

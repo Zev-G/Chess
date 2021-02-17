@@ -1,5 +1,6 @@
 package sample.chess.ui.board;
 
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Piece extends ImageView {
 
-    private static final double SIZE_RATIO = 0.9;
+    public static final double SIZE_RATIO = 0.9;
 
     private final VirtualPiece vPiece;
 
@@ -33,33 +34,49 @@ public class Piece extends ImageView {
         setImage(vPiece.genImage());
         getStyleClass().add("piece");
 
-        setFitHeight(BoardSpot.DEFAULT_SIZE * SIZE_RATIO);
-        setFitWidth((BoardSpot.DEFAULT_SIZE * SIZE_RATIO / getImage().getHeight()) * getImage().getWidth());
 
         dragImage.getStyleClass().add("piece");
+
         dragImage.setImage(getImage());
-        dragImage.setFitHeight(getFitHeight());
-        dragImage.setFitWidth(getFitWidth());
+        dragImage.fitHeightProperty().bind(fitHeightProperty());
+        dragImage.fitWidthProperty().bind(fitWidthProperty());
 
         spotSimulator.setMouseTransparent(true);
         spotSimulator.setCenter(dragImage);
-        spotSimulator.setMinWidth(BoardSpot.DEFAULT_SIZE);
-        spotSimulator.setMinHeight(BoardSpot.DEFAULT_SIZE);
     }
 
-    public void clicked(MouseEvent event, Board board) {
+    public BorderPane getSpotSimulator() {
+        return spotSimulator;
+    }
+
+    public void clicked(MouseEvent event, Board board, BoardSpot spot) {
         ArrayList<Move> moves = vPiece.genMoves();
         if (!moves.isEmpty()) {
             for (Move move : moves) {
                 if (move.isConnectedToOnePiece()) {
                     Circle circle = new Circle();
                     if (move.takesPiece()) {
-                        circle.setRadius(BoardSpot.DEFAULT_SIZE / 2.6);
+                        circle.setRadius(spot.getHeight() / 2.6);
                         circle.getStyleClass().add("take-circle");
                     } else {
-                        circle.setRadius(BoardSpot.DEFAULT_SIZE / 6.5);
+                        circle.setRadius(spot.getHeight() / 6.5);
                         circle.getStyleClass().add("move-circle");
                     }
+                    ChangeListener<Number> listener = (observableValue, number, t1) -> {
+                        if (circle.getParent() != null) {
+                            if (move.takesPiece()) {
+                                circle.setRadius(t1.doubleValue() / 2.6);
+                            } else {
+                                circle.setRadius(t1.doubleValue() / 6.5);
+                            }
+                        }
+                    };
+                    spot.heightProperty().addListener(listener);
+                    spot.parentProperty().addListener((observableValue, parent, t1) -> {
+                        if (t1 == null) {
+                            spot.heightProperty().removeListener(listener);
+                        }
+                    });
                     AtomicBoolean pressed = new AtomicBoolean(false);
                     circle.setOnMousePressed(mouseEvent -> {
                         if (!pressed.get()) {
@@ -80,14 +97,16 @@ public class Piece extends ImageView {
         startX = event.getSceneX();
         startY = event.getSceneY();
         Bounds parentBounds = spot.localToScene(spot.getBoundsInLocal());
-        spotSimulator.setLayoutX(parentBounds.getMinX());
-        spotSimulator.setLayoutY(parentBounds.getMinY());
+        Bounds boardBounds = board.getBoundsInScene();
+        spotSimulator.setLayoutX(parentBounds.getMinX() - boardBounds.getMinX());
+        spotSimulator.setLayoutY(parentBounds.getMinY() - boardBounds.getMinY());
     }
 
     public void dragged(MouseEvent event, Board board, BoardSpot atSpot) {
         Bounds parentBounds = atSpot.localToScene(atSpot.getBoundsInLocal());
-        spotSimulator.setLayoutX(parentBounds.getMinX() + (event.getSceneX() - startX));
-        spotSimulator.setLayoutY(parentBounds.getMinY() + (event.getSceneY() - startY));
+        Bounds boardBounds = board.getBoundsInScene();
+        spotSimulator.setLayoutX(parentBounds.getMinX() - boardBounds.getMinX() + (event.getSceneX() - startX));
+        spotSimulator.setLayoutY(parentBounds.getMinY() - boardBounds.getMinY() + (event.getSceneY() - startY));
 
         BoardSpot previousHoverSpot = hoverSpot;
         if (event.getPickResult().getIntersectedNode() != null) {
@@ -127,5 +146,9 @@ public class Piece extends ImageView {
 
     public VirtualPiece getVirtualPiece() {
         return vPiece;
+    }
+
+    public ImageView getDragImage() {
+        return dragImage;
     }
 }

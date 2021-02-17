@@ -11,8 +11,6 @@ import javafx.scene.shape.Shape;
 
 public class BoardSpot extends AnchorPane {
 
-    public static final double DEFAULT_SIZE = 100;
-
     private Piece currentPiece;
     private Shape currentShape;
 
@@ -23,20 +21,23 @@ public class BoardSpot extends AnchorPane {
     private final SpotColor color;
     private final Board board;
 
+
     public BoardSpot(SpotColor color, Board board) {
         this.color = color;
         this.board = board;
 
         getStyleClass().addAll("board-spot", "board-spot-" + color.toString().toLowerCase());
+        textPane.getStyleClass().add("board-spot-text-pane");
+//        getChildren().addAll(shapePane, textPane);
         getChildren().addAll(piecePane, shapePane, textPane);
 
         textPane.setPadding(new Insets(7.5));
         textPane.setMouseTransparent(true);
 
-        setMinHeight(DEFAULT_SIZE);
-        setMinWidth(DEFAULT_SIZE);
-        setMaxHeight(DEFAULT_SIZE);
-        setMaxWidth(DEFAULT_SIZE);
+//        setMinHeight(DEFAULT_SIZE);
+//        setMinWidth(DEFAULT_SIZE);
+//        setMaxHeight(DEFAULT_SIZE);
+//        setMaxWidth(DEFAULT_SIZE);
 
         AnchorPane.setLeftAnchor(piecePane, 0D); AnchorPane.setRightAnchor(piecePane, 0D);
         AnchorPane.setTopAnchor(piecePane, 0D); AnchorPane.setBottomAnchor(piecePane, 0D);
@@ -52,7 +53,7 @@ public class BoardSpot extends AnchorPane {
                     currentShape.getOnMousePressed().handle(mouseEvent);
                 } else if (currentPiece != null && board.getVirtualBoard().getGame().getCurrentTurn() == currentPiece.getVirtualPiece().getTeam() && board.getVirtualBoard().getGame().teamsTeamController(currentPiece.getVirtualPiece().getTeam()) == null && !board.getVirtualBoard().getGame().isGameOver()) {
                     board.clearShapes();
-                    currentPiece.clicked(mouseEvent, board);
+                    currentPiece.clicked(mouseEvent, board, this);
                 } else {
                     board.clearShapes();
                 }
@@ -95,11 +96,6 @@ public class BoardSpot extends AnchorPane {
             } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 BoardSpot endSpot = getBoardSpotParentRecursively(mouseEvent.getPickResult().getIntersectedNode());
                 if (endSpot != null && endSpot != this) {
-//                    Arrow arrow = new Arrow(getBoundsInScene().getMinX() + getMinWidth() / 2,
-//                                            getBoundsInScene().getMinY() + getMinWidth() / 2,
-//                                            endSpot.getBoundsInScene().getMinX() + endSpot.getMinWidth() / 2,
-//                                        endSpot.getBoundsInScene().getMinY() + endSpot.getMinHeight() / 2, 35, 25);
-//                    board.getArrowPane().getChildren().add(arrow);
                     board.drawArrow(board.locationOfBoardSpot(this), board.locationOfBoardSpot(endSpot));
                 } else if (endSpot == this) {
                     if (this.getStyleClass().contains("highlighted-spot")) {
@@ -113,21 +109,34 @@ public class BoardSpot extends AnchorPane {
     }
 
     public void setNum(int num) {
-        Label numLabel = new Label(Integer.toString(num));
+        Label numLabel = sizeConnectedLabel(0.22);
+        numLabel.setText(Integer.toString(num));
         numLabel.getStyleClass().add(color == SpotColor.LIGHT ? "dark-spot-label" : "light-spot-label");
         textPane.getChildren().add(numLabel);
         AnchorPane.setTopAnchor(numLabel, 0D); AnchorPane.setLeftAnchor(numLabel, 0D);
     }
     public void setLetter(char c) {
-        Label numLabel = new Label(Character.toString(c));
+        Label numLabel = sizeConnectedLabel(0.22);
+        numLabel.setText(Character.toString(c));
         numLabel.getStyleClass().add(color == SpotColor.LIGHT ? "dark-spot-label" : "light-spot-label");
         textPane.getChildren().add(numLabel);
         AnchorPane.setBottomAnchor(numLabel, 0D); AnchorPane.setRightAnchor(numLabel, 0D);
+    }
+    public Label sizeConnectedLabel(double ratio) {
+        Label label = new Label();
+        heightProperty().addListener((observableValue, number, t1) -> label.setStyle("-fx-font-size: " + ((int) (t1.doubleValue() * ratio)) + ";"));
+        return label;
     }
 
     public void setCurrentPiece(Piece piece) {
         currentPiece = piece;
         piecePane.setCenter(piece);
+        if (piece != null) {
+            currentPiece.setFitHeight(getHeight() * Piece.SIZE_RATIO);
+            currentPiece.setFitWidth((getWidth() * Piece.SIZE_RATIO / currentPiece.getImage().getHeight()) * currentPiece.getImage().getWidth());
+            piece.getSpotSimulator().setMinWidth(getWidth());
+            piece.getSpotSimulator().setMinHeight(getHeight());
+        }
     }
 
     public void setCurrentShape(Shape shape) {

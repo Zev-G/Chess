@@ -2,8 +2,13 @@
     -light-color: #ececd0;
     -dark-color: #759555;
     -arrow-color: rgba(248, 164, 7, 0.7);
-    -highlighted-spot-color-light: rgb(235, 97, 80);;
-    -highlighted-spot-color-dark: rgb(208, 76, 59);;
+    -highlighted-spot-color-light: rgb(235, 97, 80);
+    -highlighted-spot-color-dark: rgb(208, 76, 59);
+    -main-bg-color: #312e2b;
+}
+
+.game-container {
+    -fx-background-color: -main-bg-color;
 }
 
 .board-spot {
@@ -23,7 +28,6 @@
     -fx-text-fill: -light-color;
 }
 .light-spot-label, .dark-spot-label {
-    -fx-font-size: 22;
     -fx-font-family: Arial;
     -fx-font-weight: bold;
 }
@@ -63,6 +67,9 @@
 .hover-spot {
     -fx-border-color: white;
     -fx-border-width: 5;
+}
+.hover-spot > .board-spot-text-pane {
+    -fx-padding: 2.5;
 }
 
 .arrow-line {
