@@ -7,17 +7,22 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
+import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
+import tmw.me.chess.ui.SVG;
 import tmw.me.chess.ui.extra.Arrow;
 import tmw.me.chess.virtual.VirtualBoard;
 import tmw.me.chess.virtual.VirtualPiece;
 import tmw.me.chess.virtual.extra.Coordinates;
 import tmw.me.chess.virtual.moves.Move;
+
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 public class Board extends AnchorPane {
 
@@ -29,6 +34,8 @@ public class Board extends AnchorPane {
 
     // Visual
     private final GridPane pieceHolder = new GridPane();
+    private final VBox iconBox = new VBox();
+    private final HBox boardHolder = new HBox(pieceHolder, iconBox);
     private final Pane arrowPane = new Pane();
 
     private final DoubleProperty size = new SimpleDoubleProperty();
@@ -36,7 +43,8 @@ public class Board extends AnchorPane {
     public Board(VirtualBoard board) {
         this.vBoard = board;
         arrowPane.setMouseTransparent(true);
-        getChildren().addAll(pieceHolder, arrowPane);
+        getChildren().addAll(boardHolder, arrowPane);
+        boardHolder.setSpacing(5);
 
         size.addListener((observableValue, number, t1) -> {
             for (BoardSpot[] spots : boardSpots) {
@@ -56,8 +64,8 @@ public class Board extends AnchorPane {
                 }
             }
             Platform.runLater(() -> {
-                pieceHolder.setLayoutX(getWidth() - pieceHolder.getWidth() - ((getWidth() - pieceHolder.getWidth()) / 2));
-                pieceHolder.setLayoutY(getHeight() - pieceHolder.getHeight() - ((getHeight() - pieceHolder.getHeight()) / 2));
+                boardHolder.setLayoutX(getWidth() - boardHolder.getWidth() - ((getWidth() - boardHolder.getWidth()) / 2));
+                boardHolder.setLayoutY(getHeight() - boardHolder.getHeight() - ((getHeight() - boardHolder.getHeight()) / 2));
             });
         });
 
@@ -84,6 +92,30 @@ public class Board extends AnchorPane {
 
         initBoardSpots();
         populateGridPane();
+        initIconBox();
+    }
+
+    private void initIconBox() {
+        iconBox.getStyleClass().add("icon-box");
+        iconBox.setSpacing(7.5);
+        AnchorPane.setRightAnchor(iconBox, 0D); AnchorPane.setTopAnchor(iconBox, 0D); AnchorPane.setBottomAnchor(iconBox, 0D);
+        SVGPath copyButton = fromPath(SVG.resizePath(SVG.COPY_ICON, 2));
+        copyButton.setOnMousePressed(mouseEvent -> {
+            StringSelection selection = new StringSelection(getVirtualBoard().getGame().toFen());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
+        });
+        iconBox.getChildren().add(copyButton);
+    }
+
+    public static SVGPath fromPath(String path) {
+        SVGPath newPath = new SVGPath();
+        newPath.setContent(path);
+        newPath.setOpacity(0.5);
+        newPath.setFill(Color.WHITE);
+        newPath.setCursor(Cursor.HAND);
+        newPath.setPickOnBounds(true);
+        return newPath;
     }
 
     private void updateItemsToSize() {
@@ -251,4 +283,86 @@ public class Board extends AnchorPane {
         }, new KeyValue(pane.layoutXProperty(), newMinX), new KeyValue(pane.layoutYProperty(), newMinY)));
         timeline.play();
     }
+
+    public void animateMovement(Move move, Piece piece, int x, int y) {
+        BoardSpot spot = getBoardSpotAtSpot(piece.getVirtualPiece().getLocation());
+        this.setMouseTransparent(true);
+        piece.setVisible(false);
+        ImageView pieceImage = new ImageView(piece.getImage());
+        pieceImage.setFitHeight(piece.getFitHeight());
+        pieceImage.setFitWidth(piece.getFitWidth());
+        BorderPane pane = new BorderPane();
+        pane.setCenter(pieceImage);
+        pane.setMinHeight(spot.getHeight());
+        pane.setMinWidth(spot.getWidth());
+        Bounds bounds = spot.getBoundsInScene();
+        double minX = bounds.getMinX() - getBoundsInScene().getMinX();
+        double minY = bounds.getMinY() - getBoundsInScene().getMinY();
+        getChildren().add(pane);
+        pane.setLayoutX(minX);
+        pane.setLayoutY(minY);
+        move.justMove(getVirtualBoard());
+        updateToBoard();
+        Piece pieceAtSpot = getBoardSpotAtSpot(x, y).getPiece();
+        pieceAtSpot.setVisible(false);
+        Platform.runLater(() -> {
+            Piece a = getBoardSpotAtSpot(x, y).getPiece();
+            if (a != null)
+                a.setVisible(false);
+        });
+        Platform.runLater(this::clearShapes);
+        Bounds newPieceBounds = pieceAtSpot.localToScene(pieceAtSpot.getBoundsInLocal());
+        double newMinX = newPieceBounds.getMinX() - getBoundsInScene().getMinX();
+        double newMinY = newPieceBounds.getMinY() - getBoundsInScene().getMinY();
+        double transitionLength = 250;
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(transitionLength), actionEvent -> {
+            getChildren().remove(pane);
+            pieceAtSpot.setVisible(true);
+            piece.setVisible(true);
+            this.setMouseTransparent(false);
+        }, new KeyValue(pane.layoutXProperty(), newMinX), new KeyValue(pane.layoutYProperty(), newMinY)));
+        timeline.play();
+    }
+
+    public void animateMoveUndo(Move move) {
+        BoardSpot spot = getBoardSpotAtSpot(move.getLoc());
+        Piece piece = spot.getPiece();
+        this.setMouseTransparent(true);
+        piece.setVisible(false);
+        ImageView pieceImage = new ImageView(piece.getImage());
+        pieceImage.setFitHeight(piece.getFitHeight());
+        pieceImage.setFitWidth(piece.getFitWidth());
+        BorderPane pane = new BorderPane();
+        pane.setCenter(pieceImage);
+        pane.setMinHeight(spot.getHeight());
+        pane.setMinWidth(spot.getWidth());
+        Bounds bounds = spot.getBoundsInScene();
+        double minX = bounds.getMinX() - getBoundsInScene().getMinX();
+        double minY = bounds.getMinY() - getBoundsInScene().getMinY();
+        getChildren().add(pane);
+        pane.setLayoutX(minX);
+        pane.setLayoutY(minY);
+        move.undo(getVirtualBoard());
+        updateToBoard();
+        Piece pieceAtSpot = getBoardSpotAtSpot(move.getStartX(), move.getStartY()).getPiece();
+        pieceAtSpot.setVisible(false);
+        Platform.runLater(() -> {
+            Piece a = getBoardSpotAtSpot(move.getStartX(), move.getStartY()).getPiece();
+            if (a != null)
+                a.setVisible(false);
+        });
+        Platform.runLater(this::clearShapes);
+        Bounds newPieceBounds = pieceAtSpot.localToScene(pieceAtSpot.getBoundsInLocal());
+        double newMinX = newPieceBounds.getMinX() - getBoundsInScene().getMinX();
+        double newMinY = newPieceBounds.getMinY() - getBoundsInScene().getMinY();
+        double transitionLength = 250;
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(transitionLength), actionEvent -> {
+            getChildren().remove(pane);
+            pieceAtSpot.setVisible(true);
+            piece.setVisible(true);
+            this.setMouseTransparent(false);
+        }, new KeyValue(pane.layoutXProperty(), newMinX), new KeyValue(pane.layoutYProperty(), newMinY)));
+        timeline.play();
+    }
+
 }

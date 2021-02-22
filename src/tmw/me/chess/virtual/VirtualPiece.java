@@ -21,7 +21,6 @@ public class VirtualPiece {
     private int x;
     private int y;
 
-    private boolean canBeTakenByEnPassant = false;
     private int movedTimes = 0;
 
     public VirtualPiece(PieceType pieceType, Team team, VirtualBoard board, int x, int y) {
@@ -32,6 +31,12 @@ public class VirtualPiece {
         this.y = y;
 
         moveGenerators = PieceType.moveGeneratorsForPiece(this, board);
+    }
+
+    public static VirtualPiece fromChar(char c, VirtualBoard board, int x, int y) {
+        Team team = Character.isUpperCase(c) ? Team.WHITE : Team.BLACK;
+        PieceType type = PieceType.fromChar(Character.toLowerCase(c));
+        return new VirtualPiece(type, team, board, x, y);
     }
 
     public PieceType getPieceType() {
@@ -73,7 +78,6 @@ public class VirtualPiece {
         VirtualPiece piece = (VirtualPiece) o;
         return x == piece.x &&
                 y == piece.y &&
-                canBeTakenByEnPassant == piece.canBeTakenByEnPassant &&
                 movedTimes == piece.movedTimes &&
                 pieceType == piece.pieceType &&
                 team == piece.team;
@@ -81,15 +85,7 @@ public class VirtualPiece {
 
     @Override
     public int hashCode() {
-        return Objects.hash(pieceType, team, x, y, canBeTakenByEnPassant, movedTimes);
-    }
-
-    public void setCanBeTakenByEnPassant(boolean canBeTakenByEnPassant) {
-        this.canBeTakenByEnPassant = canBeTakenByEnPassant;
-    }
-
-    public boolean canBeTakenByEnPassant() {
-        return canBeTakenByEnPassant;
+        return Objects.hash(pieceType, team, x, y, movedTimes);
     }
 
     public Image genImage() {
@@ -137,7 +133,6 @@ public class VirtualPiece {
     public VirtualPiece copy(VirtualBoard board) {
         VirtualPiece copy = new VirtualPiece(pieceType, team, board, x, y);
         copy.movedTimes = movedTimes;
-        copy.canBeTakenByEnPassant = canBeTakenByEnPassant;
         return copy;
     }
 

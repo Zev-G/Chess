@@ -2,7 +2,6 @@ package tmw.me.chess.virtual.ai;
 
 import javafx.application.Platform;
 import tmw.me.chess.ui.board.Board;
-import tmw.me.chess.ui.extra.Arrow;
 import tmw.me.chess.virtual.Team;
 import tmw.me.chess.virtual.VirtualBoard;
 import tmw.me.chess.virtual.VirtualPiece;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MiniMaxAi extends AiBase  {
 
@@ -62,7 +60,7 @@ public abstract class MiniMaxAi extends AiBase  {
             long currentTime = Calendar.getInstance().getTimeInMillis();
             calculations = 0;
             valueChecks = 0;
-            MoveAndValue result = minimax(board, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, team);
+            MoveAndValue result = negamax(board, depth, -1000000000, 1000000000, team);
             if (LOG)
                 System.out.println("Finished. Value: " + result.getValue() + " Move: " + result.getMove());
             long dif = (Calendar.getInstance().getTimeInMillis() - currentTime) + 1;
@@ -109,17 +107,12 @@ public abstract class MiniMaxAi extends AiBase  {
         ArrayList<Move> moves = position.genBiLegalMovesForTeam(maximizingPlayer);
         orderMoves(moves);
         if (moves.size() == 0 || depth == 0) {
-            if (useQuiescentSearch) {
-                return new MoveAndValue(null, searchThroughCaptures(alpha, beta, position, maximizingPlayer));
-            } else {
-                return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer));
-            }
+             return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer) * maximizingPlayer.getAiNum());
         }
         Move bestMove = null;
         if (maximizingPlayer == Team.WHITE) {
             int maxEval = Integer.MIN_VALUE;
             for (Move move : moves) {
-                AtomicReference<Arrow> arrow = null;
                 move.doMove(position, false);
                 calculations++;
                 MoveAndValue eval = minimax(position, depth - 1, alpha, beta, maximizingPlayer.opposite());
@@ -143,7 +136,6 @@ public abstract class MiniMaxAi extends AiBase  {
         } else {
             int minEval = Integer.MAX_VALUE;
             for (Move move : moves) {
-                AtomicReference<Arrow> arrow = null;
                 move.doMove(position, false);
                 calculations++;
                 MoveAndValue eval = minimax(position, depth - 1, alpha, beta, maximizingPlayer.opposite());
@@ -165,6 +157,47 @@ public abstract class MiniMaxAi extends AiBase  {
             }
             return new MoveAndValue(bestMove, minEval);
         }
+    }
+
+    private MoveAndValue negamax(VirtualBoard position, int depth, int alpha, int beta, Team maximizingPlayer) {
+        ArrayList<Move> moves = position.genBiLegalMovesForTeam(maximizingPlayer);
+        orderMoves(moves);
+        if (moves.size() == 0 || depth == 0) {
+            if (useQuiescentSearch) {
+                return new MoveAndValue(null, searchThroughCaptures(-beta, -alpha, position, maximizingPlayer) * maximizingPlayer.getAiNum());
+            } else {
+                return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer));
+            }
+        }
+        Move bestMove = null;
+        int value = Integer.MIN_VALUE;
+        for (Move move : moves) {
+            move.doMove(position, false);
+            calculations++;
+            MoveAndValue eval = negamax(position, depth - 1, beta * -1, alpha * -1, maximizingPlayer.opposite());
+            int tempVal = position.getGame().isRepetition(position.toCompactString(maximizingPlayer.opposite())) ? 0 : -eval.getValue();
+            move.undo(position);
+            if (tempVal >= value) {
+                if (move.isLegal(position)) {
+                    value = tempVal;
+                    bestMove = move;
+                } else {
+                    continue;
+                }
+            }
+            if (PRUNING) {
+                alpha = Math.max(value, alpha);
+                if (alpha > beta) {
+                    break;
+                }
+            }
+        }
+        if (bestMove == null) {
+            if (position.isTeamInCheck(maximizingPlayer)) {
+                return new MoveAndValue(null, -9999999);
+            }
+        }
+        return new MoveAndValue(bestMove, value);
     }
 
     private int searchThroughCaptures(int alpha, int beta, VirtualBoard board, Team teamOf) {

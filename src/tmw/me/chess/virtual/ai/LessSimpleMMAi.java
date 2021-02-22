@@ -1,10 +1,10 @@
-package tmw.me.chess.virtual.moves;
+package tmw.me.chess.virtual.ai;
 
 import tmw.me.chess.virtual.Team;
 import tmw.me.chess.virtual.VirtualBoard;
 import tmw.me.chess.virtual.VirtualPiece;
-import tmw.me.chess.virtual.ai.MiniMaxAi;
 import tmw.me.chess.virtual.extra.Coordinates;
+import tmw.me.chess.virtual.moves.Move;
 
 import java.util.ArrayList;
 
@@ -26,15 +26,11 @@ public class LessSimpleMMAi extends MiniMaxAi {
 
         VirtualPiece ourKing = turnOf == Team.WHITE ? board.getWhiteKing() : board.getBlackKing();
         VirtualPiece theirKing = turnOf == Team.WHITE ? board.getBlackKing() : board.getWhiteKing();
-        if (board.getGame().isRepetition(pos)) {
-            System.out.println("Returned 0 from repetition");
-            return 0;
-        }
         if (allLegalMoves.isEmpty()) {
             Coordinates ourKingLoc = ourKing.getLocation();
             for (Move move : allLegalOpponentMoves) {
                 if (move.getLoc().equals(ourKingLoc)) {
-                    return turnOf == Team.WHITE ? -999999 : 999999;
+                    return -999999;
                 }
             }
         }
@@ -42,14 +38,32 @@ public class LessSimpleMMAi extends MiniMaxAi {
             Coordinates theirKingLoc = theirKing.getLocation();
             for (Move move : allLegalMoves) {
                 if (move.getLoc().equals(theirKingLoc)) {
-                    return turnOf == Team.WHITE ? 999999 : -999999;
+                    return 999999;
                 }
             }
             return 0;
         }
-        double val = board.boardValue();
+        if (board.getGame().isRepetition(pos)) {
+            System.out.println("Returned 0 from repetition");
+            return 0;
+        }
+        double val = 0;
+        for (VirtualPiece piece : board.getWhitePieces()) {
+            if (turnOf == Team.WHITE) {
+                val += piece.getPieceType().getVal();
+            } else {
+                val -= piece.getPieceType().getVal();
+            }
+        }
+        for (VirtualPiece piece : board.getBlackPieces()) {
+            if (turnOf == Team.WHITE) {
+                val -= piece.getPieceType().getVal();
+            } else {
+                val += piece.getPieceType().getVal();
+            }
+        }
         double moveDifference = allLegalMoves.size() - allLegalOpponentMoves.size();
-        val += (moveDifference * VALUE_OF_A_MOVE) * turnOf.getAiNum();
+        val += moveDifference * VALUE_OF_A_MOVE;
         return (int) (val * 100);
     }
 

@@ -1,17 +1,23 @@
 package tmw.me;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-import tmw.me.chess.game.Game;
+import tmw.me.chess.ui.program.Program;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
 
-        Game game = new Game(true);
-        game.show(primaryStage);
-        System.out.println(game.getVisualBoard().getVirtualBoard().toFen());
+//        Game game = new Game(true);
+//        game.start();
+//        game.show(primaryStage);
+        primaryStage.setScene(new Scene(new Program()));
+        primaryStage.setWidth(700);
+        primaryStage.setHeight(700);
+        primaryStage.show();
+//        System.out.println(game.getVisualBoard().getVirtualBoard().toFen());
 //
 //        Button combine = new Button("Combine");
 //        ColorPicker pickerA = new ColorPicker();

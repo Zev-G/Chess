@@ -130,7 +130,7 @@ public class Piece extends ImageView {
         board.getChildren().remove(spotSimulator);
         if (hoverSpot != null) {
             Coordinates hoverSpotLocation = board.locationOfBoardSpot(hoverSpot);
-            if (board.getVirtualBoard().getGame().getCurrentTurn() == vPiece.getTeam() && board.getVirtualBoard().getGame().teamsTeamController(vPiece.getTeam()) == null) {
+            if (board.getVirtualBoard().getGame().getCurrentTurn() == vPiece.getTeam() && board.getVirtualBoard().getGame().teamsTeamController(vPiece.getTeam()) == null && board.getVirtualBoard().getGame().isAtMostRecentMove()) {
                 for (Move move : vPiece.genMoves()) {
                     if (hoverSpotLocation.equals(move.getLoc())) {
                         move.doMove(board, true);

@@ -43,11 +43,17 @@ public class Coordinates {
 
     @Override
     public String toString() {
-        return ((char) 97 + x) + "" + (8 - y);
+        return ((char) (97 + x)) + "" + (8 - y);
     }
 
     public static char letterFromInt(int i) {
         return (char) (97 + i);
+    }
+
+    public static Coordinates fromString(String s) {
+        int x = s.charAt(0) - 97;
+        int y = Integer.parseInt(Character.toString(Character.toLowerCase(s.charAt(1))));
+        return new Coordinates(x, y);
     }
 
 }

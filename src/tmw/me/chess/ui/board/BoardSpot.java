@@ -51,7 +51,7 @@ public class BoardSpot extends AnchorPane {
                 board.clearArrows();
                 if (currentShape != null) {
                     currentShape.getOnMousePressed().handle(mouseEvent);
-                } else if (currentPiece != null && board.getVirtualBoard().getGame().getCurrentTurn() == currentPiece.getVirtualPiece().getTeam() && board.getVirtualBoard().getGame().teamsTeamController(currentPiece.getVirtualPiece().getTeam()) == null && !board.getVirtualBoard().getGame().isGameOver()) {
+                } else if (currentPiece != null && board.getVirtualBoard().getGame().getCurrentTurn() == currentPiece.getVirtualPiece().getTeam() && board.getVirtualBoard().getGame().teamsTeamController(currentPiece.getVirtualPiece().getTeam()) == null && !board.getVirtualBoard().getGame().isGameOver() && board.getVirtualBoard().getGame().isAtMostRecentMove()) {
                     board.clearShapes();
                     currentPiece.clicked(mouseEvent, board, this);
                 } else {
@@ -64,6 +64,7 @@ public class BoardSpot extends AnchorPane {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (currentPiece != null) {
                     currentPiece.dragDetected(mouseEvent, board, this);
+                    getStyleClass().add("move-spot");
                 }
             }
         });
@@ -84,6 +85,7 @@ public class BoardSpot extends AnchorPane {
         });
 
         setOnMouseReleased(mouseEvent -> {
+            getStyleClass().remove("move-spot");
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (currentPiece != null) {
                     currentPiece.dragReleased(mouseEvent, board);

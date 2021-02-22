@@ -7,6 +7,7 @@ import tmw.me.chess.virtual.VirtualPiece;
 
 import java.util.ArrayList;
 
+// TODO fix promotion undo issues and implement correct en passant stuff
 public class PawnMG extends MoveGenerator {
 
     public PawnMG(VirtualPiece piece, VirtualBoard board) {
@@ -17,20 +18,26 @@ public class PawnMG extends MoveGenerator {
     public Move[] abstractGenMoves() {
         ArrayList<Move> moves = new ArrayList<>();
         // En Passant
-        if (piece.getX() > 0) {
-            VirtualPiece pieceToLeft = board.getPieceAtLocation(piece.getX() - 1, piece.getY());
-            if (pieceToLeft != null && pieceToLeft.canBeTakenByEnPassant() && pieceToLeft.getTeam() != piece.getTeam()
-                && !board.isPieceAtLocation(piece.getX() - 1, piece.getY() + piece.getTeam().getNum())) {
-                moves.add(new EnPassant(piece, pieceToLeft, piece.getX() - 1, piece.getY() + piece.getTeam().getNum()));
+        if (board.getGame().getEnPassant() != null) {
+            VirtualPiece enPassantPiece = board.getPieceAtLocation(board.getGame().getEnPassant());
+            if (enPassantPiece != null && enPassantPiece.getTeam() != piece.getTeam() && enPassantPiece.getY() == piece.getY() && Math.abs(piece.getX() - enPassantPiece.getX()) == 1) {
+                moves.add(new EnPassant(piece, enPassantPiece, enPassantPiece.getX(), piece.getY() + piece.getTeam().getNum()));
             }
         }
-        if (piece.getX() < 7) {
-            VirtualPiece pieceToLeft = board.getPieceAtLocation(piece.getX() + 1, piece.getY());
-            if (pieceToLeft != null && pieceToLeft.canBeTakenByEnPassant() && pieceToLeft.getTeam() != piece.getTeam()
-                && !board.isPieceAtLocation(piece.getX() + 1, piece.getY() + piece.getTeam().getNum())) {
-                moves.add(new EnPassant(piece, pieceToLeft, piece.getX() + 1, piece.getY() + piece.getTeam().getNum()));
-            }
-        }
+//        if (piece.getX() > 0) {
+//            VirtualPiece pieceToLeft = board.getPieceAtLocation(board.getGame().getEnPassant());
+//            if (pieceToLeft != null && pieceToLeft.canBeTakenByEnPassant() && pieceToLeft.getTeam() != piece.getTeam()
+//                && !board.isPieceAtLocation(piece.getX() - 1, piece.getY() + piece.getTeam().getNum())) {
+//                moves.add(new EnPassant(piece, pieceToLeft, piece.getX() - 1, piece.getY() + piece.getTeam().getNum()));
+//            }
+//        }
+//        if (piece.getX() < 7) {
+//            VirtualPiece pieceToLeft = board.getPieceAtLocation(piece.getX() + 1, piece.getY());
+//            if (pieceToLeft != null && pieceToLeft.canBeTakenByEnPassant() && pieceToLeft.getTeam() != piece.getTeam()
+//                && !board.isPieceAtLocation(piece.getX() + 1, piece.getY() + piece.getTeam().getNum())) {
+//                moves.add(new EnPassant(piece, pieceToLeft, piece.getX() + 1, piece.getY() + piece.getTeam().getNum()));
+//            }
+//        }
         // Move One/Two Forward
         if (piece.getY() < 7 && piece.getY() > 0 && !board.isPieceAtLocation(piece.getX(), piece.getY() + piece.getTeam().getNum())) {
             if (!piece.hasMoved() && !board.isPieceAtLocation(piece.getX(), piece.getY() + piece.getTeam().getNum() * 2)) {
@@ -91,9 +98,14 @@ public class PawnMG extends MoveGenerator {
         @Override
         protected void abstractDoMove(VirtualBoard board) {
             super.abstractDoMove(board);
-            piece.setCanBeTakenByEnPassant(true);
+            piece.getBoard().getGame().setEnPassant(getLoc());
         }
 
+        @Override
+        public void abstractUndo(VirtualBoard board) {
+            super.abstractUndo(board);
+            piece.getBoard().getGame().setEnPassant(previousEnPassant);
+        }
     }
 
     private static class PossiblePromotion extends SimpleMove {
@@ -109,6 +121,9 @@ public class PawnMG extends MoveGenerator {
         @Override
         protected void abstractDoMove(VirtualBoard board) {
             if (y == 0 || y == 7) {
+                if (takePiece != null) {
+                    board.forceKillPiece(takePiece);
+                }
                 board.forceKillPiece(piece);
                 newPiece = new VirtualPiece(type, piece.getTeam(), board, x, y);
                 board.addPiece(newPiece);
@@ -122,6 +137,9 @@ public class PawnMG extends MoveGenerator {
             if (y == 0 || y == 7) {
                 board.forceKillPiece(newPiece);
                 board.addPiece(piece, startX, startY);
+                if (takePiece != null) {
+                    board.addPiece(takePiece, x, y);
+                }
             } else {
                 super.abstractUndo(board);
             }

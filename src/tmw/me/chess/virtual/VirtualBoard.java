@@ -153,8 +153,11 @@ public class VirtualBoard {
         return text.toString();
     }
 
-    private static VirtualPiece[] eightNulls() {
+    public static VirtualPiece[] eightNulls() {
         return new VirtualPiece[]{ null, null, null, null, null, null, null, null };
+    }
+    public static VirtualPiece[][] emptyBoard() {
+        return new VirtualPiece[][]{ eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls() };
     }
 
     public void movePiece(VirtualPiece piece, int x, int y) {
@@ -413,20 +416,55 @@ public class VirtualBoard {
         return fen.toString();
     }
 
-    public void toFen(String fen) {
-
-    }
-
-    public static void fromFen(String fen, Game game) {
-
-    }
-
     // These methods only make sure the king and rook haven't moved, which is why they are private.
     private boolean canCastleKingSide(Team team) {
-        return team == Team.WHITE ? (!kswRook.hasMoved() && !whiteKing.hasMoved()) : (!ksbRook.hasMoved() && !blackKing.hasMoved());
+        return team == Team.WHITE ? (!(kswRook != null && kswRook.hasMoved()) && !whiteKing.hasMoved()) : (!(ksbRook != null && ksbRook.hasMoved()) && !blackKing.hasMoved());
     }
     private boolean canCastleQueenSide(Team team) {
-        return team == Team.WHITE ? (!qswRook.hasMoved() && !whiteKing.hasMoved()) : (!qsbRook.hasMoved() && !blackKing.hasMoved());
+        return team == Team.WHITE ? (!(qswRook != null && qswRook.hasMoved()) && !whiteKing.hasMoved()) : (!(qsbRook != null && qsbRook.hasMoved()) && !blackKing.hasMoved());
+    }
+
+    public VirtualPiece getKsbRook() {
+        return ksbRook;
+    }
+    public VirtualPiece getKswRook() {
+        return kswRook;
+    }
+    public VirtualPiece getQsbRook() {
+        return qsbRook;
+    }
+    public VirtualPiece getQswRook() {
+        return qswRook;
+    }
+
+    public static String applyFenToArray(VirtualPiece[][] pieces, String fen, VirtualBoard board) {
+        int x = 0;
+        int y = 0;
+        char[] asCharArray = fen.toCharArray();
+        for (int i = 0; i < asCharArray.length; i++) {
+            char c = asCharArray[i];
+            if (c == ' ')
+                return fen.substring(i);
+            if (c == '/') {
+                x = 0;
+                y++;
+                continue;
+            }
+            try {
+                int skipNum = Integer.parseInt(Character.toString(c));
+                x += skipNum;
+            } catch (NumberFormatException ignore) {
+                VirtualPiece piece = VirtualPiece.fromChar(c, board, x, y);
+                pieces[x][y] = piece;
+                if (c == 'p' && piece.getY() != 1) {
+                    piece.moved();
+                } else if (c == 'P' && piece.getY() != 6) {
+                    piece.moved();
+                }
+                x++;
+            }
+        }
+        return null;
     }
 
     @Override

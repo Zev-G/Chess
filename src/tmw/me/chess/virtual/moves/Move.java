@@ -8,7 +8,6 @@ import tmw.me.chess.virtual.extra.Coordinates;
 public abstract class Move {
 
     protected final VirtualPiece piece;
-    protected VirtualPiece takePiece;
 
     protected final int x;
     protected final int y;
@@ -18,6 +17,8 @@ public abstract class Move {
 
     protected boolean connectedToOnePiece = true;
 
+    protected VirtualPiece takePiece;
+    protected Coordinates previousEnPassant;
 
     protected Move(VirtualPiece piece, int x, int y) {
         this.piece = piece;
@@ -37,14 +38,21 @@ public abstract class Move {
     public void doMove(VirtualBoard board, boolean forReal) {
         doMove(board, forReal, true);
     }
+    public void justMove(VirtualBoard board) {
+        abstractDoMove(board);
+    }
     public void doMove(VirtualBoard board, boolean forReal, boolean nextTurn) {
-        if (piece.canBeTakenByEnPassant()) {
-            piece.setCanBeTakenByEnPassant(false);
-        }
+        previousEnPassant = board.getGame().getEnPassant();
         piece.moved();
         abstractDoMove(board);
         if (nextTurn && forReal) {
             board.getGame().nextTurn(this);
+        }
+        if (previousEnPassant != null) {
+            Coordinates postEnPassant = board.getGame().getEnPassant();
+            if (previousEnPassant.equals(postEnPassant)) {
+                board.getGame().setEnPassant(null);
+            }
         }
     }
     protected abstract void abstractDoMove(VirtualBoard board);
@@ -77,8 +85,17 @@ public abstract class Move {
     }
 
     public void undo(VirtualBoard board) {
+        undo(board, true);
+    }
+    public void undo(VirtualBoard board, boolean trueUndo) {
         abstractUndo(board);
-        piece.unMoved();
+        if (trueUndo) {
+            Coordinates enPassant = board.getGame().getEnPassant();
+            if ((enPassant == null && previousEnPassant != null) || (enPassant != null && !enPassant.equals(previousEnPassant))) {
+                board.getGame().setEnPassant(previousEnPassant);
+            }
+            piece.unMoved();
+        }
     }
     protected abstract void abstractUndo(VirtualBoard board);
 
