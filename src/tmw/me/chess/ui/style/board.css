@@ -19,34 +19,42 @@
 .program {
     -fx-background-color: -main-bg-color;
 }
+
 .game-maker {
     -fx-background-color: -dark-bg-color;
     -fx-effect: dropshadow(three-pass-box, -darker-bg-color, 0, 1.0, 0, 7.5);
     -fx-background-radius: 10;
 }
+
 .drop-menu .arrow-button {
     visibility: false;
 }
+
 .drop-menu {
     -fx-font-size: 20;
     -fx-font-weight: bolder;
     -fx-font-family: Montserrat;
 }
+
 .drop-menu .label {
     -fx-text-fill: white;
 }
+
 #choice-box-popup-menu {
     -fx-background-color: -darker-bg-color;
     -fx-background-radius: 10;
 }
-#choice-box-popup-menu .menu-item:hover,.menu-item:focused {
+
+#choice-box-popup-menu .menu-item:hover, .menu-item:focused {
     -fx-background-color: -main-bg-color;
 }
+
 .top-pane {
     -fx-background-color: -dark-bg-color;
     -fx-effect: dropshadow(three-pass-box, -darker-bg-color, 2, 0.6, 0, 7.5);
     -fx-min-height: 45;
 }
+
 .text-field {
     -fx-text-fill: dimgray;
 }
@@ -62,30 +70,38 @@
 .board-spot-light {
     -fx-background-color: -light-color;
 }
+
 .board-spot-dark {
     -fx-background-color: -dark-color;
 }
+
 .dark-spot-label {
     -fx-text-fill: -dark-color;
 }
+
 .light-spot-label {
     -fx-text-fill: -light-color;
 }
+
 .light-spot-label, .dark-spot-label {
     -fx-font-family: Montserrat;
     -fx-font-weight: bold;
 }
+
 .board-spot-dark.move-spot {
     /*185, 200, 43*/
     -fx-background-color: -dark-move-spot-color;
 }
+
 .board-spot-light.move-spot {
     /*244, 244, 129*/
     -fx-background-color: -light-move-spot-color;
 }
+
 .board-spot-light.highlighted-spot {
     -fx-background-color: -highlighted-spot-color-light !important;
 }
+
 .board-spot-dark.highlighted-spot {
     -fx-background-color: -highlighted-spot-color-dark !important;
 }
@@ -93,17 +109,16 @@
 .take-circle {
     -fx-fill: transparent;
     -fx-stroke: rgba(100, 100, 100, 0.4);
-    -fx-stroke-width: 10;
 }
 
 .move-circle {
-    -fx-fill:  rgba(100, 100, 100, 0.4);
+    -fx-fill: rgba(100, 100, 100, 0.4);
 }
 
 .hover-spot {
     -fx-border-color: white;
-    -fx-border-width: 5;
 }
+
 .hover-spot > .board-spot-text-pane {
     -fx-padding: 2.5;
 }
@@ -113,6 +128,7 @@
     -fx-stroke: -arrow-color;
     -fx-fill: -arrow-color;
 }
+
 .arrow-cap {
     -fx-stroke-width: 15;
     -fx-stroke: -arrow-color;

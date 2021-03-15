@@ -18,12 +18,12 @@ public class SimpleMG extends MoveGenerator {
         this.ableToTake = canTake;
         this.requiredToTake = mustTake;
     }
+
     public SimpleMG(VirtualPiece piece, VirtualBoard board, int xDif, int yDif) {
         this(piece, board, xDif, yDif, true, false);
     }
 
     /**
-     *
      * @return The generated moves.
      */
     @Override
@@ -35,12 +35,12 @@ public class SimpleMG extends MoveGenerator {
         }
         if (board.isPieceAtLocation(newX, newY)) {
             if (ableToTake && board.getPieceAtLocation(newX, newY).getTeam() != piece.getTeam()) {
-                return new Move[]{ new SimpleMove(piece, newX, newY) };
+                return new Move[]{new SimpleMove(piece, newX, newY)};
             } else {
                 return new Move[]{};
             }
         } else if (!requiredToTake) {
-            return new Move[]{ new SimpleMove(piece, newX, newY) };
+            return new Move[]{new SimpleMove(piece, newX, newY)};
         } else {
             return new Move[]{};
         }
@@ -54,6 +54,7 @@ public class SimpleMG extends MoveGenerator {
     public boolean isAbleToTake() {
         return ableToTake;
     }
+
     public boolean isRequiredToTake() {
         return requiredToTake;
     }

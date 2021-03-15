@@ -19,9 +19,11 @@ public class TextField extends javafx.scene.control.TextField {
     public TextField(String text) {
         this(text, BigButton.DEFAULT_COLOR);
     }
+
     public TextField(String text, Color mainColor) {
         this(BigButton.DEFAULT_WIDTH * 1.8, BigButton.DEFAULT_HEIGHT, text, mainColor, BigButton.HoverEffect.GLOW);
     }
+
     public TextField(double minWidth, double minHeight, String text, Color mainBgColor, BigButton.HoverEffect hoverEffect) {
         super(text);
         setMinWidth(minWidth);

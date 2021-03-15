@@ -20,32 +20,32 @@ public enum PieceType {
 
     public static MoveGenerator[] moveGeneratorsForPiece(VirtualPiece piece, VirtualBoard board) {
         if (piece.getPieceType() == PAWN) {
-            return new MoveGenerator[]{ new PawnMG(piece, board) };
+            return new MoveGenerator[]{new PawnMG(piece, board)};
         } else if (piece.getPieceType() == KNIGHT) {
-            return new MoveGenerator[]{ new SimpleMG(piece, board, 1, 2), new SimpleMG(piece, board, 2, 1)
-                                          , new SimpleMG(piece, board, -1, 2), new SimpleMG(piece, board, -2, 1)
-                                          , new SimpleMG(piece, board, 1, -2), new SimpleMG(piece, board, 2, -1)
-                                          , new SimpleMG(piece, board, -1, -2), new SimpleMG(piece, board, -2, -1)};
+            return new MoveGenerator[]{new SimpleMG(piece, board, 1, 2), new SimpleMG(piece, board, 2, 1)
+                    , new SimpleMG(piece, board, -1, 2), new SimpleMG(piece, board, -2, 1)
+                    , new SimpleMG(piece, board, 1, -2), new SimpleMG(piece, board, 2, -1)
+                    , new SimpleMG(piece, board, -1, -2), new SimpleMG(piece, board, -2, -1)};
         } else if (piece.getPieceType() == BISHOP) {
-            return new MoveGenerator[]{ new RepeatingMG(piece, board, 1, 1), new RepeatingMG(piece, board, -1, -1)
-                                          , new RepeatingMG(piece, board, -1, 1), new RepeatingMG(piece, board, 1, -1) };
+            return new MoveGenerator[]{new RepeatingMG(piece, board, 1, 1), new RepeatingMG(piece, board, -1, -1)
+                    , new RepeatingMG(piece, board, -1, 1), new RepeatingMG(piece, board, 1, -1)};
         } else if (piece.getPieceType() == ROOK) {
-            return new MoveGenerator[]{ new RepeatingMG(piece, board, 1, 0), new RepeatingMG(piece, board, -1, 0)
-                                          , new RepeatingMG(piece, board, 0, 1), new RepeatingMG(piece, board, 0, -1) };
+            return new MoveGenerator[]{new RepeatingMG(piece, board, 1, 0), new RepeatingMG(piece, board, -1, 0)
+                    , new RepeatingMG(piece, board, 0, 1), new RepeatingMG(piece, board, 0, -1)};
         } else if (piece.getPieceType() == QUEEN) {
             return new MoveGenerator[]{
-                                          // Rook
-                                            new RepeatingMG(piece, board, 1, 0), new RepeatingMG(piece, board, -1, 0)
-                                          , new RepeatingMG(piece, board, 0, 1), new RepeatingMG(piece, board, 0, -1)
-                                          // Bishop
-                                          , new RepeatingMG(piece, board, 1, 1), new RepeatingMG(piece, board, -1, -1)
-                                          , new RepeatingMG(piece, board, -1, 1), new RepeatingMG(piece, board, 1, -1) };
+                    // Rook
+                    new RepeatingMG(piece, board, 1, 0), new RepeatingMG(piece, board, -1, 0)
+                    , new RepeatingMG(piece, board, 0, 1), new RepeatingMG(piece, board, 0, -1)
+                    // Bishop
+                    , new RepeatingMG(piece, board, 1, 1), new RepeatingMG(piece, board, -1, -1)
+                    , new RepeatingMG(piece, board, -1, 1), new RepeatingMG(piece, board, 1, -1)};
         } else {
             // Must be king
-            return new MoveGenerator[]{ new CastlingMG(piece, board),
-                new SimpleMG(piece, board, -1, 1), new SimpleMG(piece, board, 0, 1), new SimpleMG(piece, board, 1, 1),
-                new SimpleMG(piece, board, -1, 0), new SimpleMG(piece, board, 1, 0),
-                new SimpleMG(piece, board, -1, -1), new SimpleMG(piece, board, 0, -1), new SimpleMG(piece, board, 1, -1)
+            return new MoveGenerator[]{new CastlingMG(piece, board),
+                    new SimpleMG(piece, board, -1, 1), new SimpleMG(piece, board, 0, 1), new SimpleMG(piece, board, 1, 1),
+                    new SimpleMG(piece, board, -1, 0), new SimpleMG(piece, board, 1, 0),
+                    new SimpleMG(piece, board, -1, -1), new SimpleMG(piece, board, 0, -1), new SimpleMG(piece, board, 1, -1)
             };
         }
     }

@@ -4,7 +4,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import tmw.me.chess.virtual.VirtualPiece;
 import tmw.me.chess.virtual.extra.Coordinates;
@@ -24,6 +25,7 @@ public class Piece extends ImageView {
     private double startY;
     private BoardSpot hoverSpot;
     private boolean makeVisible = false;
+    private boolean wasVisible = true;
 
     private final ImageView dragImage = new ImageView();
     private final BorderPane spotSimulator = new BorderPane();
@@ -51,6 +53,7 @@ public class Piece extends ImageView {
 
     public void clicked(MouseEvent event, Board board, BoardSpot spot) {
         ArrayList<Move> moves = vPiece.genMoves();
+        wasVisible = isVisible();
         if (!moves.isEmpty()) {
             for (Move move : moves) {
                 if (move.isConnectedToOnePiece()) {
@@ -58,6 +61,7 @@ public class Piece extends ImageView {
                     if (move.takesPiece()) {
                         circle.setRadius(spot.getHeight() / 2.6);
                         circle.getStyleClass().add("take-circle");
+                        circle.setStrokeWidth(spot.getHeight() / 10);
                     } else {
                         circle.setRadius(spot.getHeight() / 6.5);
                         circle.getStyleClass().add("move-circle");
@@ -66,6 +70,7 @@ public class Piece extends ImageView {
                         if (circle.getParent() != null) {
                             if (move.takesPiece()) {
                                 circle.setRadius(t1.doubleValue() / 2.6);
+                                circle.setStrokeWidth(t1.doubleValue() / 10);
                             } else {
                                 circle.setRadius(t1.doubleValue() / 6.5);
                             }
@@ -113,18 +118,18 @@ public class Piece extends ImageView {
             hoverSpot = BoardSpot.getBoardSpotParentRecursively(event.getPickResult().getIntersectedNode());
         }
         if (hoverSpot != null && previousHoverSpot != hoverSpot) {
-            if (!hoverSpot.getStyleClass().contains("hover-spot")) {
-                hoverSpot.getStyleClass().add("hover-spot");
+            if (hoverSpot.getBorder() == null) {
+                hoverSpot.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(hoverSpot.getHeight() * 0.05))));
             }
             if (previousHoverSpot != null) {
-                previousHoverSpot.getStyleClass().remove("hover-spot");
+                previousHoverSpot.setBorder(null);
             }
         }
     }
 
     public void dragReleased(MouseEvent event, Board board) {
         if (makeVisible) {
-            setVisible(true);
+            setVisible(wasVisible);
             makeVisible = false;
         }
         board.getChildren().remove(spotSimulator);
@@ -139,7 +144,7 @@ public class Piece extends ImageView {
                     }
                 }
             }
-            hoverSpot.getStyleClass().remove("hover-spot");
+            hoverSpot.setBorder(null);
             hoverSpot = null;
         }
     }

@@ -74,8 +74,10 @@ public class Board extends AnchorPane {
         heightProperty().addListener((observableValue, number, t1) -> updateItemsToSize());
         Platform.runLater(this::updateItemsToSize);
 
-        AnchorPane.setLeftAnchor(arrowPane, 0D); AnchorPane.setRightAnchor(arrowPane, 0D);
-        AnchorPane.setBottomAnchor(arrowPane, 0D); AnchorPane.setTopAnchor(arrowPane, 0D);
+        AnchorPane.setLeftAnchor(arrowPane, 0D);
+        AnchorPane.setRightAnchor(arrowPane, 0D);
+        AnchorPane.setBottomAnchor(arrowPane, 0D);
+        AnchorPane.setTopAnchor(arrowPane, 0D);
 
         setMinWidth(0);
         minWidthProperty().addListener((observableValue, number, t1) -> {
@@ -98,7 +100,9 @@ public class Board extends AnchorPane {
     private void initIconBox() {
         iconBox.getStyleClass().add("icon-box");
         iconBox.setSpacing(7.5);
-        AnchorPane.setRightAnchor(iconBox, 0D); AnchorPane.setTopAnchor(iconBox, 0D); AnchorPane.setBottomAnchor(iconBox, 0D);
+        AnchorPane.setRightAnchor(iconBox, 0D);
+        AnchorPane.setTopAnchor(iconBox, 0D);
+        AnchorPane.setBottomAnchor(iconBox, 0D);
         SVGPath copyButton = fromPath(SVG.resizePath(SVG.COPY_ICON, 2));
         copyButton.setOnMousePressed(mouseEvent -> {
             StringSelection selection = new StringSelection(getVirtualBoard().getGame().toFen());
@@ -186,6 +190,7 @@ public class Board extends AnchorPane {
     public BoardSpot[][] getBoardSpots() {
         return boardSpots;
     }
+
     public BoardSpot getBoardSpotAtSpot(int x, int y) {
         return boardSpots[x][y];
     }
@@ -216,6 +221,7 @@ public class Board extends AnchorPane {
     public void drawArrow(Coordinates coords1, Coordinates coords2) {
         drawArrow(coords1.getX(), coords1.getY(), coords2.getX(), coords2.getY());
     }
+
     public Arrow drawArrow(int x1, int y1, int x2, int y2) {
         BoardSpot spot1 = getBoardSpotAtSpot(x1, y1);
         BoardSpot spot2 = getBoardSpotAtSpot(x2, y2);
@@ -230,12 +236,15 @@ public class Board extends AnchorPane {
         getArrowPane().getChildren().add(arrow);
         return arrow;
     }
+
     public Pane getArrowPane() {
         return arrowPane;
     }
+
     public void removeArrow(Arrow arrow) {
         arrowPane.getChildren().remove(arrow);
     }
+
     public void clearArrows() {
         arrowPane.getChildren().clear();
         for (BoardSpot[] spots : boardSpots) {

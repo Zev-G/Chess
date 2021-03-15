@@ -28,6 +28,7 @@ public class VirtualBoard {
     public VirtualBoard(Game game) {
         this.game = game;
     }
+
     public VirtualBoard(VirtualPiece[][] board, Game game) {
         this.game = game;
         this.board = board;
@@ -88,12 +89,15 @@ public class VirtualBoard {
     public boolean isPieceAtLocation(Coordinates coords) {
         return isPieceAtLocation(coords.getX(), coords.getY());
     }
+
     public boolean isPieceAtLocation(int x, int y) {
         return getPieceAtLocation(x, y) != null;
     }
+
     public boolean isPieceAtLocationForTeam(Team team, Coordinates coords) {
         return isPieceAtLocationForTeam(team, coords.getX(), coords.getY());
     }
+
     public boolean isPieceAtLocationForTeam(Team team, int x, int y) {
         VirtualPiece piece = getPieceAtLocation(x, y);
         return piece != null && piece.getTeam() == team;
@@ -102,6 +106,7 @@ public class VirtualBoard {
     public VirtualPiece getPieceAtLocation(Coordinates coords) {
         return getPieceAtLocation(coords.getX(), coords.getY());
     }
+
     public VirtualPiece getPieceAtLocation(int x, int y) {
         if (board[x].length < y + 1) {
             return null;
@@ -127,15 +132,15 @@ public class VirtualBoard {
 
     public static VirtualBoard defaultBoard(Game game) {
         VirtualBoard board = new VirtualBoard(game);
-        VirtualPiece[][] boardValue = new VirtualPiece[][] {
-                { new VirtualPiece(PieceType.ROOK, Team.BLACK, board, 0, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 0, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 0, 6), new VirtualPiece(PieceType.ROOK, Team.WHITE, board, 0, 7) },
-                { new VirtualPiece(PieceType.KNIGHT, Team.BLACK, board, 1, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 1, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 1, 6), new VirtualPiece(PieceType.KNIGHT, Team.WHITE, board, 1, 7) },
-                { new VirtualPiece(PieceType.BISHOP, Team.BLACK, board, 2, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 2, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 2, 6), new VirtualPiece(PieceType.BISHOP, Team.WHITE, board, 2, 7) },
-                { new VirtualPiece(PieceType.QUEEN, Team.BLACK, board, 3, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 3, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 3, 6), new VirtualPiece(PieceType.QUEEN, Team.WHITE, board, 3, 7) },
-                { new VirtualPiece(PieceType.KING, Team.BLACK, board, 4, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 4, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 4, 6), new VirtualPiece(PieceType.KING, Team.WHITE, board, 4, 7) },
-                { new VirtualPiece(PieceType.BISHOP, Team.BLACK, board, 5, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 5, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 5, 6), new VirtualPiece(PieceType.BISHOP, Team.WHITE, board, 5, 7) },
-                { new VirtualPiece(PieceType.KNIGHT, Team.BLACK, board, 6, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 6, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 6, 6), new VirtualPiece(PieceType.KNIGHT, Team.WHITE, board, 6, 7) },
-                { new VirtualPiece(PieceType.ROOK, Team.BLACK, board, 7, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 7, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 7, 6), new VirtualPiece(PieceType.ROOK, Team.WHITE, board, 7, 7) }
+        VirtualPiece[][] boardValue = new VirtualPiece[][]{
+                {new VirtualPiece(PieceType.ROOK, Team.BLACK, board, 0, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 0, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 0, 6), new VirtualPiece(PieceType.ROOK, Team.WHITE, board, 0, 7)},
+                {new VirtualPiece(PieceType.KNIGHT, Team.BLACK, board, 1, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 1, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 1, 6), new VirtualPiece(PieceType.KNIGHT, Team.WHITE, board, 1, 7)},
+                {new VirtualPiece(PieceType.BISHOP, Team.BLACK, board, 2, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 2, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 2, 6), new VirtualPiece(PieceType.BISHOP, Team.WHITE, board, 2, 7)},
+                {new VirtualPiece(PieceType.QUEEN, Team.BLACK, board, 3, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 3, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 3, 6), new VirtualPiece(PieceType.QUEEN, Team.WHITE, board, 3, 7)},
+                {new VirtualPiece(PieceType.KING, Team.BLACK, board, 4, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 4, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 4, 6), new VirtualPiece(PieceType.KING, Team.WHITE, board, 4, 7)},
+                {new VirtualPiece(PieceType.BISHOP, Team.BLACK, board, 5, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 5, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 5, 6), new VirtualPiece(PieceType.BISHOP, Team.WHITE, board, 5, 7)},
+                {new VirtualPiece(PieceType.KNIGHT, Team.BLACK, board, 6, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 6, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 6, 6), new VirtualPiece(PieceType.KNIGHT, Team.WHITE, board, 6, 7)},
+                {new VirtualPiece(PieceType.ROOK, Team.BLACK, board, 7, 0), new VirtualPiece(PieceType.PAWN, Team.BLACK, board, 7, 1), null, null, null, null, new VirtualPiece(PieceType.PAWN, Team.WHITE, board, 7, 6), new VirtualPiece(PieceType.ROOK, Team.WHITE, board, 7, 7)}
         };
         board.initBoard(boardValue);
         return board;
@@ -154,10 +159,11 @@ public class VirtualBoard {
     }
 
     public static VirtualPiece[] eightNulls() {
-        return new VirtualPiece[]{ null, null, null, null, null, null, null, null };
+        return new VirtualPiece[]{null, null, null, null, null, null, null, null};
     }
+
     public static VirtualPiece[][] emptyBoard() {
-        return new VirtualPiece[][]{ eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls() };
+        return new VirtualPiece[][]{eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls(), eightNulls()};
     }
 
     public void movePiece(VirtualPiece piece, int x, int y) {
@@ -174,7 +180,6 @@ public class VirtualBoard {
         piece.setY(y);
         board[x][y] = piece;
     }
-
 
 
     public ArrayList<VirtualPiece> getBlackPieces() {
@@ -270,6 +275,7 @@ public class VirtualBoard {
     public void addPiece(VirtualPiece piece) {
         addPiece(piece, piece.getX(), piece.getY());
     }
+
     public void addPiece(VirtualPiece piece, int x, int y) {
         if (piece.getTeam() == Team.WHITE) {
             whitePieces.add(piece);
@@ -290,6 +296,7 @@ public class VirtualBoard {
         }
         return moves;
     }
+
     public ArrayList<Move> genBiLegalMovesForTeam(Team team) {
         ArrayList<Move> moves = new ArrayList<>();
         for (VirtualPiece piece : team == Team.WHITE ? (ArrayList<VirtualPiece>) whitePieces.clone() : (ArrayList<VirtualPiece>) blackPieces.clone()) {
@@ -297,6 +304,7 @@ public class VirtualBoard {
         }
         return moves;
     }
+
     public ArrayList<Move> genTakeMovesForTeam(Team team) {
         ArrayList<Move> moves = new ArrayList<>();
         for (VirtualPiece piece : team == Team.WHITE ? (ArrayList<VirtualPiece>) whitePieces.clone() : (ArrayList<VirtualPiece>) blackPieces.clone()) {
@@ -420,6 +428,7 @@ public class VirtualBoard {
     private boolean canCastleKingSide(Team team) {
         return team == Team.WHITE ? (!(kswRook != null && kswRook.hasMoved()) && !whiteKing.hasMoved()) : (!(ksbRook != null && ksbRook.hasMoved()) && !blackKing.hasMoved());
     }
+
     private boolean canCastleQueenSide(Team team) {
         return team == Team.WHITE ? (!(qswRook != null && qswRook.hasMoved()) && !whiteKing.hasMoved()) : (!(qsbRook != null && qsbRook.hasMoved()) && !blackKing.hasMoved());
     }
@@ -427,12 +436,15 @@ public class VirtualBoard {
     public VirtualPiece getKsbRook() {
         return ksbRook;
     }
+
     public VirtualPiece getKswRook() {
         return kswRook;
     }
+
     public VirtualPiece getQsbRook() {
         return qsbRook;
     }
+
     public VirtualPiece getQswRook() {
         return qswRook;
     }

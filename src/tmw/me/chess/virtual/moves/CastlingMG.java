@@ -24,7 +24,7 @@ public class CastlingMG extends MoveGenerator {
                 VirtualPiece kingRook = board.getPieceAtLocation(7, 0);
                 // Castling King-Side
                 if (kingRook != null && !kingRook.hasMoved() && !enemyMoves.contains(new Coordinates(5, 0)) && !enemyMoves.contains(new Coordinates(6, 0))
-                    && !board.isPieceAtLocation(5, 0) && !board.isPieceAtLocation(6, 0)) {
+                        && !board.isPieceAtLocation(5, 0) && !board.isPieceAtLocation(6, 0)) {
                     moves.add(new CastleMove(piece, 6, 0, kingRook, 5, 0));
                 }
                 // Castling Queen-Side

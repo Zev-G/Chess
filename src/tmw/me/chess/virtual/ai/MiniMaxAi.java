@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class MiniMaxAi extends AiBase  {
+public abstract class MiniMaxAi extends AiBase {
 
     private static final boolean LOG = true;
 
@@ -107,7 +107,7 @@ public abstract class MiniMaxAi extends AiBase  {
         ArrayList<Move> moves = position.genBiLegalMovesForTeam(maximizingPlayer);
         orderMoves(moves);
         if (moves.size() == 0 || depth == 0) {
-             return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer) * maximizingPlayer.getAiNum());
+            return new MoveAndValue(null, efficientGetSituationValue(position, maximizingPlayer) * maximizingPlayer.getAiNum());
         }
         Move bestMove = null;
         if (maximizingPlayer == Team.WHITE) {
@@ -255,7 +255,7 @@ public abstract class MiniMaxAi extends AiBase  {
                 moveScoreGuess = 10 * takePiece.getPieceType().getVal() - movePiece.getPieceType().getVal();
             }
 //            if (movePiece.getPieceType() != PieceType.PAWN) {
-                // TODO check if moves to a square attacked by an opponent pawn.
+            // TODO check if moves to a square attacked by an opponent pawn.
 //            }
             moveScores[i] = moveScoreGuess;
         }

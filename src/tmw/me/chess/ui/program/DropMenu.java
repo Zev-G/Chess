@@ -20,10 +20,12 @@ public class DropMenu<T> extends ChoiceBox<T> {
     public DropMenu(T... items) {
         this(BigButton.DEFAULT_COLOR, items);
     }
+
     @SafeVarargs
     public DropMenu(Color mainColor, T... items) {
         this(BigButton.DEFAULT_WIDTH, BigButton.DEFAULT_HEIGHT, mainColor, BigButton.HoverEffect.GLOW, items);
     }
+
     @SafeVarargs
     public DropMenu(double minWidth, double minHeight, Color mainBgColor, BigButton.HoverEffect hoverEffect, T... items) {
         getStyleClass().add("drop-menu");

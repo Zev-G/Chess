@@ -9,10 +9,10 @@ import java.util.HashMap;
 
 /**
  * Plan on using:
- *  Simple Negamax,
- *  Transposition Tables,
- *    Zobrist Keys,
- *  Alpha Beta Pruning
+ * Simple Negamax,
+ * Transposition Tables,
+ * Zobrist Keys,
+ * Alpha Beta Pruning
  */
 public abstract class NegaScoutAi extends AiBase {
 
@@ -21,7 +21,7 @@ public abstract class NegaScoutAi extends AiBase {
 
     protected double minWaitTime = 150;
 
-    private long moveCounter = 0;
+    private final long moveCounter = 0;
 
     protected final HashMap<Long, NegamaxPosition> transpositionTable = new HashMap<>();
 
@@ -36,7 +36,6 @@ public abstract class NegaScoutAi extends AiBase {
     public void move(VirtualBoard board, Team team, Board visualBoard) {
 
     }
-
 
 
     private static class NegamaxPosition {

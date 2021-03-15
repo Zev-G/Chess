@@ -37,7 +37,8 @@ public class Program extends AnchorPane {
         topPane.getStyleClass().add("top-pane");
         getStylesheets().add(Styles.get("board"));
 
-        BorderPane homeButtonHolder = new BorderPane(); homeButtonHolder.setCenter(homeButton);
+        BorderPane homeButtonHolder = new BorderPane();
+        homeButtonHolder.setCenter(homeButton);
 
         getChildren().addAll(layout, topPane);
         middleBox.setCenter(buttons);
@@ -51,12 +52,17 @@ public class Program extends AnchorPane {
         homeButton.setOpacity(0.3);
         homeButtonHolder.setPadding(new Insets(5));
 
-        AnchorPane.setTopAnchor(layout, 45D); AnchorPane.setBottomAnchor(layout, 0D);
-        AnchorPane.setRightAnchor(layout, 0D); AnchorPane.setLeftAnchor(layout, 0D);
+        AnchorPane.setTopAnchor(layout, 45D);
+        AnchorPane.setBottomAnchor(layout, 0D);
+        AnchorPane.setRightAnchor(layout, 0D);
+        AnchorPane.setLeftAnchor(layout, 0D);
 
         AnchorPane.setTopAnchor(topPane, 0D);
-        AnchorPane.setRightAnchor(topPane, 0D); AnchorPane.setLeftAnchor(topPane, 0D);
-        var ref = new Object() { EventHandler<MouseEvent> mousePressedHandler = null; };
+        AnchorPane.setRightAnchor(topPane, 0D);
+        AnchorPane.setLeftAnchor(topPane, 0D);
+        var ref = new Object() {
+            EventHandler<MouseEvent> mousePressedHandler = null;
+        };
         ref.mousePressedHandler = mouseEvent -> {
             playButton.setText("Start Game");
             buttons.getChildren().remove(fromFenButton);
@@ -79,7 +85,9 @@ public class Program extends AnchorPane {
         };
         playButton.setOnMousePressed(ref.mousePressedHandler);
 
-        var ref1 = new Object() { EventHandler<MouseEvent> mousePressedHandler = null; };
+        var ref1 = new Object() {
+            EventHandler<MouseEvent> mousePressedHandler = null;
+        };
         ref1.mousePressedHandler = mouseEvent -> {
             fromFenButton.setText("Start Game");
             buttons.getChildren().remove(playButton);

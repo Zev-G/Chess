@@ -50,6 +50,7 @@ public class VirtualPiece {
     public void setX(int x) {
         this.x = x;
     }
+
     public void setY(int y) {
         this.y = y;
     }
@@ -95,9 +96,11 @@ public class VirtualPiece {
     public boolean hasMoved() {
         return movedTimes != 0;
     }
+
     public void moved() {
         movedTimes++;
     }
+
     public void unMoved() {
         if (movedTimes > 0)
             movedTimes--;
@@ -118,6 +121,7 @@ public class VirtualPiece {
         }
         return moves;
     }
+
     public ArrayList<Move> genBiLegalMoves() {
         ArrayList<Move> moves = new ArrayList<>();
         for (MoveGenerator generator : moveGenerators) {

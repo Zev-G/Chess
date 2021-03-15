@@ -24,10 +24,13 @@ public abstract class MoveGenerator {
         }
         return validMoves.toArray(new Move[0]);
     }
+
     public Move[] genMovesWithoutCheckingIfLegal() {
         return abstractGenMoves();
     }
+
     protected abstract Move[] abstractGenMoves();
+
     public abstract Move[] genThreateningMoves();
 
     public VirtualBoard getBoard() {

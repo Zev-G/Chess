@@ -8,6 +8,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Shape;
+import tmw.me.chess.virtual.moves.Move;
 
 public class BoardSpot extends AnchorPane {
 
@@ -21,6 +22,7 @@ public class BoardSpot extends AnchorPane {
     private final SpotColor color;
     private final Board board;
 
+    private boolean wasMoveSpotBefore = false;
 
     public BoardSpot(SpotColor color, Board board) {
         this.color = color;
@@ -39,12 +41,18 @@ public class BoardSpot extends AnchorPane {
 //        setMaxHeight(DEFAULT_SIZE);
 //        setMaxWidth(DEFAULT_SIZE);
 
-        AnchorPane.setLeftAnchor(piecePane, 0D); AnchorPane.setRightAnchor(piecePane, 0D);
-        AnchorPane.setTopAnchor(piecePane, 0D); AnchorPane.setBottomAnchor(piecePane, 0D);
-        AnchorPane.setLeftAnchor(shapePane, 0D); AnchorPane.setRightAnchor(shapePane, 0D);
-        AnchorPane.setTopAnchor(shapePane, 0D); AnchorPane.setBottomAnchor(shapePane, 0D);
-        AnchorPane.setLeftAnchor(textPane, 0D); AnchorPane.setRightAnchor(textPane, 0D);
-        AnchorPane.setTopAnchor(textPane, 0D); AnchorPane.setBottomAnchor(textPane, 0D);
+        AnchorPane.setLeftAnchor(piecePane, 0D);
+        AnchorPane.setRightAnchor(piecePane, 0D);
+        AnchorPane.setTopAnchor(piecePane, 0D);
+        AnchorPane.setBottomAnchor(piecePane, 0D);
+        AnchorPane.setLeftAnchor(shapePane, 0D);
+        AnchorPane.setRightAnchor(shapePane, 0D);
+        AnchorPane.setTopAnchor(shapePane, 0D);
+        AnchorPane.setBottomAnchor(shapePane, 0D);
+        AnchorPane.setLeftAnchor(textPane, 0D);
+        AnchorPane.setRightAnchor(textPane, 0D);
+        AnchorPane.setTopAnchor(textPane, 0D);
+        AnchorPane.setBottomAnchor(textPane, 0D);
 
         setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
@@ -64,7 +72,12 @@ public class BoardSpot extends AnchorPane {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (currentPiece != null) {
                     currentPiece.dragDetected(mouseEvent, board, this);
-                    getStyleClass().add("move-spot");
+                    if (getStyleClass().contains("move-spot")) {
+                        wasMoveSpotBefore = true;
+                    } else {
+                        wasMoveSpotBefore = false;
+                        getStyleClass().add("move-spot");
+                    }
                 }
             }
         });
@@ -76,7 +89,7 @@ public class BoardSpot extends AnchorPane {
                     if (mouseEvent.getPickResult().getIntersectedNode() == null || mouseEvent.getPickResult().getIntersectedNode() instanceof Board) {
                         for (BoardSpot[] spots : board.getBoardSpots()) {
                             for (BoardSpot spot : spots) {
-                                spot.getStyleClass().remove("hover-spot");
+                                spot.setBorder(null);
                             }
                         }
                     }
@@ -85,15 +98,19 @@ public class BoardSpot extends AnchorPane {
         });
 
         setOnMouseReleased(mouseEvent -> {
-            getStyleClass().remove("move-spot");
+//            getStyleClass().remove("move-spot");
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (currentPiece != null) {
                     currentPiece.dragReleased(mouseEvent, board);
                 }
                 for (BoardSpot[] spots : board.getBoardSpots()) {
                     for (BoardSpot spot : spots) {
-                        spot.getStyleClass().remove("hover-spot");
+                        spot.setBorder(null);
                     }
+                }
+                Move lastMove = board.getVirtualBoard().getGame().getLastMove();
+                if (lastMove == null || (board.getBoardSpotAtSpot(lastMove.getStart()) != this && board.getBoardSpotAtSpot(lastMove.getLoc()) != this)) {
+                    getStyleClass().remove("move-spot");
                 }
             } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 BoardSpot endSpot = getBoardSpotParentRecursively(mouseEvent.getPickResult().getIntersectedNode());
@@ -115,15 +132,19 @@ public class BoardSpot extends AnchorPane {
         numLabel.setText(Integer.toString(num));
         numLabel.getStyleClass().add(color == SpotColor.LIGHT ? "dark-spot-label" : "light-spot-label");
         textPane.getChildren().add(numLabel);
-        AnchorPane.setTopAnchor(numLabel, 0D); AnchorPane.setLeftAnchor(numLabel, 0D);
+        AnchorPane.setTopAnchor(numLabel, 0D);
+        AnchorPane.setLeftAnchor(numLabel, 0D);
     }
+
     public void setLetter(char c) {
         Label numLabel = sizeConnectedLabel(0.22);
         numLabel.setText(Character.toString(c));
         numLabel.getStyleClass().add(color == SpotColor.LIGHT ? "dark-spot-label" : "light-spot-label");
         textPane.getChildren().add(numLabel);
-        AnchorPane.setBottomAnchor(numLabel, 0D); AnchorPane.setRightAnchor(numLabel, 0D);
+        AnchorPane.setBottomAnchor(numLabel, 0D);
+        AnchorPane.setRightAnchor(numLabel, 0D);
     }
+
     public Label sizeConnectedLabel(double ratio) {
         Label label = new Label();
         heightProperty().addListener((observableValue, number, t1) -> label.setStyle("-fx-font-size: " + ((int) (t1.doubleValue() * ratio)) + ";"));

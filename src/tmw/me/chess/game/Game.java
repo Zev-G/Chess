@@ -2,6 +2,7 @@ package tmw.me.chess.game;
 
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import tmw.me.chess.ui.board.Board;
 import tmw.me.chess.ui.board.BoardSpot;
@@ -77,6 +78,7 @@ public class Game {
     public AiBase getWhiteController() {
         return whiteController;
     }
+
     public AiBase getBlackController() {
         return blackController;
     }
@@ -84,6 +86,7 @@ public class Game {
     public void setWhiteController(AiBase whiteController) {
         this.whiteController = whiteController;
     }
+
     public void setBlackController(AiBase blackController) {
         this.blackController = blackController;
     }
@@ -122,6 +125,7 @@ public class Game {
         }
         return false;
     }
+
     public boolean goForward(boolean animate) {
         if (animate && !visualBoard.isVisible())
             return false;
@@ -143,9 +147,11 @@ public class Game {
         }
         return false;
     }
+
     public boolean isAtMostRecentMove() {
         return varianceLocation == 0;
     }
+
     public void goToMostRecentMove() {
         while (varianceLocation != 0) {
             goBack(false);
@@ -157,6 +163,7 @@ public class Game {
         getVisualBoard().getBoardSpotAtSpot(move.getLoc()).getStyleClass().add("move-spot");
         getVisualBoard().getBoardSpotAtSpot(move.getStart()).getStyleClass().add("move-spot");
     }
+
     public void clearHighlighting() {
         for (BoardSpot[] spots : getVisualBoard().getBoardSpots()) {
             for (BoardSpot spot : spots) {
@@ -313,7 +320,7 @@ public class Game {
     }
 
     public void applyWithScene(Scene scene) {
-        scene.setOnKeyPressed(keyEvent -> {
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.LEFT) {
                 goBack(true);
             } else if (keyEvent.getCode() == KeyCode.RIGHT) {
@@ -324,5 +331,11 @@ public class Game {
 
     public void stop() {
         gameOver = true;
+    }
+
+    public Move getLastMove() {
+        if (moves.size() == 0)
+            return null;
+        return moves.get(moves.size() - 1);
     }
 }

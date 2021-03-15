@@ -29,9 +29,11 @@ public class BigButton extends Button {
     public BigButton(String text) {
         this(text, DEFAULT_COLOR);
     }
+
     public BigButton(String text, Color mainColor) {
         this(DEFAULT_WIDTH, DEFAULT_HEIGHT, text, null, mainColor, HoverEffect.GLOW);
     }
+
     public BigButton(double minWidth, double minHeight, String text, Node graphic, Color mainBgColor, HoverEffect hoverEffect) {
         super(text, graphic);
         setMinWidth(minWidth);

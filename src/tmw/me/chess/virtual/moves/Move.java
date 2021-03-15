@@ -35,12 +35,15 @@ public abstract class Move {
             board.getVirtualBoard().getGame().nextTurn(this);
         }
     }
+
     public void doMove(VirtualBoard board, boolean forReal) {
         doMove(board, forReal, true);
     }
+
     public void justMove(VirtualBoard board) {
         abstractDoMove(board);
     }
+
     public void doMove(VirtualBoard board, boolean forReal, boolean nextTurn) {
         previousEnPassant = board.getGame().getEnPassant();
         piece.moved();
@@ -55,10 +58,16 @@ public abstract class Move {
             }
         }
     }
+
     protected abstract void abstractDoMove(VirtualBoard board);
 
-    public Coordinates getLoc() { return new Coordinates(x, y); }
-    public Coordinates getStart() { return new Coordinates(startX, startY); }
+    public Coordinates getLoc() {
+        return new Coordinates(x, y);
+    }
+
+    public Coordinates getStart() {
+        return new Coordinates(startX, startY);
+    }
 
     public int getX() {
         return x;
@@ -87,6 +96,7 @@ public abstract class Move {
     public void undo(VirtualBoard board) {
         undo(board, true);
     }
+
     public void undo(VirtualBoard board, boolean trueUndo) {
         abstractUndo(board);
         if (trueUndo) {
@@ -97,8 +107,8 @@ public abstract class Move {
             piece.unMoved();
         }
     }
-    protected abstract void abstractUndo(VirtualBoard board);
 
+    protected abstract void abstractUndo(VirtualBoard board);
 
 
     @Override

@@ -45,7 +45,7 @@ public class PawnMG extends MoveGenerator {
             }
             moves.add(new PossiblePromotion(piece, PieceType.QUEEN, piece.getX(), piece.getY() + piece.getTeam().getNum()));
         }
-        if (piece.getX() > 0 && piece.getY() < 7 && piece.getY() > 0 && board.isPieceAtLocationForTeam(piece.getTeam().opposite(),piece.getX() - 1, piece.getY() + piece.getTeam().getNum())) {
+        if (piece.getX() > 0 && piece.getY() < 7 && piece.getY() > 0 && board.isPieceAtLocationForTeam(piece.getTeam().opposite(), piece.getX() - 1, piece.getY() + piece.getTeam().getNum())) {
             moves.add(new PossiblePromotion(piece, PieceType.QUEEN, piece.getX() - 1, piece.getY() + piece.getTeam().getNum()));
         }
         if (piece.getX() < 7 && piece.getY() < 7 && piece.getY() > 0 && board.isPieceAtLocationForTeam(piece.getTeam().opposite(), piece.getX() + 1, piece.getY() + piece.getTeam().getNum())) {
