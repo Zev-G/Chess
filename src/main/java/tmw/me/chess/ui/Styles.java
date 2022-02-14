@@ -1,11 +1,12 @@
-package tmw.me.chess.ui.style;
+package tmw.me.chess.ui;
 
 import javafx.scene.paint.Color;
+import tmw.me.Resources;
 
 public class Styles {
 
     public static String get(String name) {
-        return Styles.class.getResource(name + (name.endsWith(".css") ? "" : ".css")).toExternalForm();
+        return Resources.css(name);
     }
 
     public static Color mixColorsWithAlpha(Color color1, Color color2, double opacity) {

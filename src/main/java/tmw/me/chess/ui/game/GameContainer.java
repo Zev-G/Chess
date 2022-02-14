@@ -7,8 +7,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tmw.me.chess.game.Game;
-import tmw.me.chess.ui.style.PowerfulStyler;
-import tmw.me.chess.ui.style.Styles;
+import tmw.me.chess.ui.extra.PowerfulStyler;
+import tmw.me.chess.ui.Styles;
 
 public class GameContainer extends AnchorPane {
 

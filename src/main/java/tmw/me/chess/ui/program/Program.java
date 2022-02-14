@@ -14,7 +14,7 @@ import tmw.me.chess.game.Game;
 import tmw.me.chess.ui.SVG;
 import tmw.me.chess.ui.board.Board;
 import tmw.me.chess.ui.game.GameContainer;
-import tmw.me.chess.ui.style.Styles;
+import tmw.me.chess.ui.Styles;
 
 import java.util.function.Consumer;
 

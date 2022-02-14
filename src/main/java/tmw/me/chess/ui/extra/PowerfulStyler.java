@@ -1,4 +1,4 @@
-package tmw.me.chess.ui.style;
+package tmw.me.chess.ui.extra;
 
 import javafx.scene.Node;
 

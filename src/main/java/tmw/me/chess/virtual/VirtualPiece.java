@@ -1,7 +1,7 @@
 package tmw.me.chess.virtual;
 
 import javafx.scene.image.Image;
-import tmw.me.chess.ui.images.Images;
+import tmw.me.chess.ui.Images;
 import tmw.me.chess.virtual.extra.Coordinates;
 import tmw.me.chess.virtual.moves.Move;
 import tmw.me.chess.virtual.moves.MoveGenerator;

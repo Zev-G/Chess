@@ -13,7 +13,7 @@
 
 @font-face {
     font-family: Montserrat;
-    src: url('montserrat.woff2');
+    src: url('../fonts/montserrat.woff2');
 }
 
 .program {
